@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe | Bookmarks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body class="bg-black text-white min-h-screen overflow-x-hidden">
+
+    <div class="aurora-bg opacity-20" style="background: radial-gradient(circle at center, rgba(59,130,246,0.1), transparent 50%);"></div>
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full z-50 glass-nav px-6 py-4 flex justify-between items-center bg-black/50 backdrop-blur-md border-b border-white/10">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">V</div>
+            <a href="home.html" class="text-xl font-bold font-space tracking-tighter hover:text-purple-400 transition-colors">Vibe.</a>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8">
+            <a href="home.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors">Explore</a>
+            <a href="chat.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5"><i data-lucide="bot" class="w-3 h-3 inline"></i> Oracle AI</a>
+            <a href="messages.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5"><i data-lucide="message-square" class="w-3 h-3 inline"></i> Network</a>
+            <a href="bookmarks.html" class="text-xs font-bold tracking-widest uppercase border-b-2 border-purple-500 pb-1">Bookmarks</a>
+            <a href="profile.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors">Identity</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <a href="profile.html" class="w-10 h-10 rounded-full bg-zinc-800 border border-white/10 overflow-hidden cursor-pointer block hover:ring-2 hover:ring-purple-500 transition-all">
+                <img id="user-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" class="w-full h-full object-cover">
+            </a>
+        </div>
+    </nav>
+
+    <main class="pt-32 px-6 max-w-7xl mx-auto pb-20 relative z-10">
+        
+        <div class="mb-12 text-center md:text-left">
+            <h1 class="text-4xl md:text-5xl font-bold font-space tracking-tighter mb-4">Saved Coordinates.</h1>
+            <p class="text-gray-400 max-w-2xl font-mono text-sm">Experience data cached for future deployment. These vibes are locked into your neural net.</p>
+        </div>
+
+        <div id="bookmarks-grid" class="masonry-grid w-full">
+            <div class="col-span-full text-center py-20 text-gray-500 flex flex-col items-center justify-center">
+                <i data-lucide="bookmark-minus" class="w-12 h-12 mb-4 opacity-50"></i>
+                <p>No experiences bookmarked yet.</p>
+                <a href="home.html" class="mt-4 px-6 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors text-sm font-bold uppercase tracking-widest">Return to Grid</a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 border-t border-white/10 bg-black/50 backdrop-blur-xl py-12 px-6 relative z-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-purple-600 rounded flex items-center justify-center font-bold text-[10px]">V</div>
+                <span class="text-sm font-bold font-space tracking-tighter">Vibe.</span>
+            </div>
+            <p class="text-[10px] text-gray-500 font-mono uppercase tracking-widest">© 2026 Vibe Ecosystem. All rights reserved.</p>
+            <div class="flex items-center gap-4">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBImD4KXKJSZ94QqIMjnu54NRHaQu7dvnY",
+            authDomain: "jsitest-d2e8e.firebaseapp.com",
+            projectId: "jsitest-d2e8e",
+            storageBucket: "jsitest-d2e8e.firebasestorage.app",
+            messagingSenderId: "879082552061",
+            appId: "1:879082552061:web:292f08bbdf316a2bed9c94"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        lucide.createIcons();
+        
+        const grid = document.getElementById('bookmarks-grid');
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if(docSnap.exists()){
+                        const data = docSnap.data();
+                        document.getElementById('user-avatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.avatarSeed || 'Felix'}`;
+                    }
+                    
+                    grid.innerHTML = `<div class="col-span-full py-20 flex justify-center"><i data-lucide="loader-2" class="w-8 h-8 text-purple-500 animate-spin"></i></div>`;
+                    lucide.createIcons();
+                    
+                    // Fetch Bookmarked (Liked) Experiences safely without indexing error
+                    const q = query(collection(db, "experiences"), where("likes", "array-contains", user.uid));
+                    const snap = await getDocs(q);
+                    
+                    if(snap.empty) {
+                        grid.innerHTML = `
+                            <div class="col-span-full text-center py-20 text-gray-500 flex flex-col items-center justify-center">
+                                <i data-lucide="bookmark-minus" class="w-12 h-12 mb-4 opacity-50"></i>
+                                <p>No experiences bookmarked yet.</p>
+                                <a href="home.html" class="mt-4 px-6 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors text-sm font-bold uppercase tracking-widest">Return to Grid</a>
+                            </div>
+                        `;
+                        lucide.createIcons();
+                        return;
+                    }
+                    
+                    const posts = [];
+                    snap.forEach(d => posts.push(d.data()));
+                    posts.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort locally
+                    
+                    grid.innerHTML = `<div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6"></div>`;
+                    const container = grid.querySelector('div');
+                    
+                    posts.forEach(post => {
+                        const el = document.createElement('a');
+                        el.href = "home.html"; // Clicking it takes them to the grid to explore
+                        el.className = "relative block group rounded-3xl overflow-hidden mb-6 filter hover:filter-none transition-all duration-700 bg-zinc-900 border border-white/10 shadow-xl shadow-purple-900/10 break-inside-avoid";
+                        el.innerHTML = `
+                            <img src="${post.imageUrl}" class="w-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="absolute top-4 right-4 z-20">
+                                <i data-lucide="heart" class="w-5 h-5 fill-red-500 text-red-500"></i>
+                            </div>
+                            <div class="absolute bottom-6 left-6 right-6 z-20">
+                                <h3 class="text-xl font-black font-space leading-tight mb-2 uppercase tracking-tighter">${post.title}</h3>
+                                <div class="flex items-center gap-1.5 text-purple-400 font-mono text-[10px]">
+                                    <i data-lucide="map-pin" class="w-3 h-3"></i> ${post.tags ? post.tags.split(',')[0].replace('#','') : 'The Grid'}
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(el);
+                    });
+                    lucide.createIcons();
+
+                } catch(e) { console.error(e); }
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+    </script>
+</body>
+</html>

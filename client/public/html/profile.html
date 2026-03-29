@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe | Identity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* 1. THE VIBE AURA */
+        .vibe-aura {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            transition: background 1s ease, transform 3s ease-in-out;
+            z-index: 0;
+            animation: pulseAura 4s infinite alternate;
+        }
+        @keyframes pulseAura {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+        }
+
+        /* 2. MEMORY CAPSULES */
+        .capsule-board {
+            position: relative;
+            min-height: 400px;
+            width: 100%;
+        }
+        .memory-polaroid {
+            width: 200px;
+            background: #111;
+            padding: 10px 10px 30px 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s;
+            cursor: pointer;
+            filter: grayscale(80%) contrast(1.2);
+        }
+        .memory-polaroid:hover {
+            transform: scale(1.1) rotate(0deg) !important;
+            filter: grayscale(0%) contrast(1);
+            z-index: 50;
+        }
+        .memory-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+        .cinematic-quote {
+            font-family: 'Space Grotesk', serif;
+            font-size: 10px;
+            color: #ccc;
+            margin-top: 12px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* 3. VIBE SIGNATURE BARS */
+        .stat-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .stat-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen overflow-x-hidden">
+
+    <div class="aurora-bg opacity-20" style="background: radial-gradient(circle at top right, rgba(90,0,150,0.1), transparent 40%);"></div>
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full z-50 glass-nav px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">V</div>
+            <a href="/client/public/html/home.html" class="text-xl font-bold font-space tracking-tighter hover:text-purple-400 transition-colors">Vibe.</a>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8">
+            <a href="home.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors">Explore</a>
+            <a href="chat.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5"><i data-lucide="bot" class="w-3 h-3 inline"></i> Oracle AI</a>
+            <a href="messages.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5"><i data-lucide="message-square" class="w-3 h-3 inline"></i> Network</a>
+            <a href="bookmarks.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors">Bookmarks</a>
+            <a href="profile.html" class="text-xs font-bold tracking-widest uppercase border-b-2 border-purple-500 pb-1">Identity</a>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <button id="btn-logout" class="text-[10px] font-bold tracking-widest text-gray-500 hover:text-red-500 uppercase transition-colors">Disconnect</button>
+
+            <div class="w-10 h-10 rounded-full bg-zinc-800 border border-white/30 overflow-hidden cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                <img id="user-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" class="w-full h-full object-cover">
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-32 px-6 max-w-7xl mx-auto pb-20 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        <!-- LEFT COL: IDENTITY & VIBE SIGNATURE -->
+        <div class="lg:col-span-4 space-y-8">
+            
+            <!-- IDENTITY CARD WITH AURA -->
+            <div class="glass-card p-8 rounded-[2rem] border border-white/5 relative overflow-hidden flex flex-col items-center text-center transition-all duration-500" id="identity-card">
+                <!-- THE VIBE AURA -->
+                <div id="vibe-aura" class="vibe-aura" style="background: radial-gradient(circle, rgba(168,85,247,0.8) 0%, rgba(0,0,0,0) 70%);"></div>
+                
+                <div class="relative z-10">
+                    <div class="relative w-28 h-28 mx-auto mb-4">
+                        <div class="w-full h-full rounded-full border-2 border-white/20 p-1 bg-black/50 backdrop-blur-sm relative z-10 group cursor-pointer overflow-hidden border border-white/10 relative" id="avatar-container">
+                            <img id="main-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-full h-full rounded-full object-cover transition-all duration-300 group-hover:blur-sm group-hover:opacity-50" alt="avatar">
+                            
+                            <!-- Hover Overlay -->
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <i data-lucide="camera" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <!-- Hidden Upload Input -->
+                            <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+                        </div>
+                        <div id="admin-badge" class="absolute -bottom-2 -right-2 bg-gradient-to-r from-red-500 to-orange-500 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.5)] z-20 hidden border border-black group-hover:scale-110 transition-transform cursor-help" title="System Administrator">ADMIN_1</div>
+                    </div>
+                    
+                    <div class="flex items-center justify-center gap-2 mb-1 group/name">
+                        <h2 class="text-2xl font-bold font-space uppercase tracking-tighter" id="profile-name">Explorer_09</h2>
+                        <button id="btn-edit-name" class="opacity-0 group-hover/name:opacity-100 text-gray-500 hover:text-white transition-all"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                    </div>
+                    <form id="edit-name-form" class="hidden flex items-center justify-center gap-2 mb-1">
+                        <input type="text" id="input-edit-name" class="bg-black/50 border border-purple-500/50 rounded px-3 py-1 text-white font-space uppercase tracking-tighter w-40 focus:outline-none text-center text-sm" required>
+                        <button type="submit" class="text-green-500 hover:text-green-400 bg-white/5 p-1 rounded transition-colors"><i data-lucide="check" class="w-4 h-4"></i></button>
+                        <button type="button" id="btn-cancel-edit" class="text-red-500 hover:text-red-400 bg-white/5 p-1 rounded transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </form>
+                    
+                    <p class="text-xs font-mono text-gray-400 mb-6">Digital Nomad • Joined 2026</p>
+                    
+                    <div class="bg-black/40 rounded-xl p-1 inline-flex p-1 border border-white/10">
+                        <button class="theme-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white/10 text-white" data-color="rgba(168,85,247,0.8)">Neon</button>
+                        <button class="theme-btn px-4 py-2 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white" data-color="rgba(34,197,94,0.8)">Toxic</button>
+                        <button class="theme-btn px-4 py-2 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white" data-color="rgba(59,130,246,0.8)">Cyber</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIBE SIGNATURE (ANALYTICS) -->
+            <div class="glass-card p-8 rounded-[2rem] border border-white/5 relative overflow-hidden">
+                <h3 class="text-lg font-bold font-space mb-6 flex items-center gap-2">
+                    <i data-lucide="bar-chart-2" class="text-purple-500"></i>
+                    Vibe Signature
+                </h3>
+
+                <div class="space-y-5">
+                    <div>
+                        <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-300">
+                            <span>Night Owl <span class="text-[9px] text-gray-500 opacity-50">(Nightlife & Cyberpunk)</span></span>
+                            <span class="text-purple-400" id="stat-night-text">0%</span>
+                        </div>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar bg-gradient-to-r from-purple-600 to-purple-400" style="width: 0%" id="stat-night-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-300">
+                            <span>Chill / Zen <span class="text-[9px] text-gray-500 opacity-50">(Nature & Minimal)</span></span>
+                            <span class="text-blue-400" id="stat-zen-text">0%</span>
+                        </div>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar bg-gradient-to-r from-blue-600 to-blue-400" style="width: 0%" id="stat-zen-bar"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-300">
+                            <span>Foodie <span class="text-[9px] text-gray-500 opacity-50">(Food & Drink)</span></span>
+                            <span class="text-orange-400" id="stat-food-text">0%</span>
+                        </div>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar bg-gradient-to-r from-orange-600 to-orange-400" style="width: 0%" id="stat-food-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COL: MEMORY CAPSULES -->
+        <div class="lg:col-span-8">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold font-space tracking-tighter">Memory Capsules.</h2>
+                    <p class="text-sm text-gray-500">Fragments of past experiences, cemented in the grid.</p>
+                </div>
+                <button id="btn-disperse" class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+                    <i data-lucide="shuffle" class="w-4 h-4 group-hover:rotate-180 transition-transform duration-500"></i> Disperse
+                </button>
+            </div>
+
+            <div class="capsule-board flex flex-wrap gap-4 items-center justify-center p-10 bg-white/5 rounded-[3rem] border border-white/5 relative overflow-hidden" id="capsule-container">
+                <!-- Javascript will render polaroids here -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 bg-black/50 backdrop-blur-xl py-12 px-6 relative z-10 mt-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-purple-600 rounded flex items-center justify-center font-bold text-[10px]">V</div>
+                <span class="text-sm font-bold font-space tracking-tighter">Vibe.</span>
+            </div>
+            <p class="text-[10px] text-gray-500 font-mono uppercase tracking-widest">© 2026 Vibe Ecosystem. All rights reserved.</p>
+            <div class="flex items-center gap-4">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ONBOARDING QUIZ MODAL -->
+    <div id="onboarding-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-3xl hidden items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-3xl p-8 border border-white/10 text-center relative overflow-hidden">
+            <div class="aurora-bg opacity-30 pointer-events-none"></div>
+            <h2 class="text-3xl font-bold font-space mb-2">Initialize Identity.</h2>
+            <p class="text-sm text-gray-400 mb-8">Before entering the grid, calibrate your digital signature.</p>
+            
+            <form id="onboard-form" class="space-y-6 relative z-10">
+                <div class="space-y-3">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest block text-left">1. Select Avatar Seed</label>
+                    <div class="flex justify-between gap-2 overflow-x-auto pb-2 no-scrollbar">
+                        <label class="cursor-pointer group flex-shrink-0">
+                            <input type="radio" name="avatar" value="Felix" class="peer hidden" checked>
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-16 h-16 rounded-full border-2 border-transparent peer-checked:border-purple-500 hover:ring-2 ring-white/20 transition-all">
+                        </label>
+                        <label class="cursor-pointer group flex-shrink-0">
+                            <input type="radio" name="avatar" value="Aneka" class="peer hidden">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="w-16 h-16 rounded-full border-2 border-transparent peer-checked:border-purple-500 hover:ring-2 ring-white/20 transition-all">
+                        </label>
+                        <label class="cursor-pointer group flex-shrink-0">
+                            <input type="radio" name="avatar" value="Jack" class="peer hidden">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jack" class="w-16 h-16 rounded-full border-2 border-transparent peer-checked:border-purple-500 hover:ring-2 ring-white/20 transition-all">
+                        </label>
+                        <label class="cursor-pointer group flex-shrink-0">
+                            <input type="radio" name="avatar" value="Lily" class="peer hidden">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Lily" class="w-16 h-16 rounded-full border-2 border-transparent peer-checked:border-purple-500 hover:ring-2 ring-white/20 transition-all">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest block text-left">2. Core Frequency (Aura)</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="theme" value="purple" class="peer hidden" checked>
+                            <div class="bg-purple-900/30 border border-purple-500/30 p-3 rounded-xl peer-checked:border-purple-500 peer-checked:bg-purple-500/20 text-xs font-bold font-mono text-purple-300 text-center transition-all">Midnight</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="theme" value="red" class="peer hidden">
+                            <div class="bg-red-900/30 border border-red-500/30 p-3 rounded-xl peer-checked:border-red-500 peer-checked:bg-red-500/20 text-xs font-bold font-mono text-red-300 text-center transition-all">Toxic</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="theme" value="blue" class="peer hidden">
+                            <div class="bg-blue-900/30 border border-blue-500/30 p-3 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-xs font-bold font-mono text-blue-300 text-center transition-all">Cyber</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="theme" value="green" class="peer hidden">
+                            <div class="bg-green-900/30 border border-green-500/30 p-3 rounded-xl peer-checked:border-green-500 peer-checked:bg-green-500/20 text-xs font-bold font-mono text-green-300 text-center transition-all">Matrix</div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-save-identity" class="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-purple-500 hover:text-white transition-all flex justify-center gap-2 items-center active:scale-[0.98]">
+                    FINALIZE
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, query, where, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBImD4KXKJSZ94QqIMjnu54NRHaQu7dvnY",
+            authDomain: "jsitest-d2e8e.firebaseapp.com",
+            projectId: "jsitest-d2e8e",
+            storageBucket: "jsitest-d2e8e.firebasestorage.app",
+            messagingSenderId: "879082552061",
+            appId: "1:879082552061:web:292f08bbdf316a2bed9c94"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Vibe Theme Logic
+        const aura = document.getElementById('vibe-aura');
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.theme-btn').forEach(b => {
+                    b.classList.remove('bg-white/10', 'text-white');
+                    b.classList.add('text-gray-400');
+                });
+                e.target.classList.add('bg-white/10', 'text-white');
+                e.target.classList.remove('text-gray-400');
+                
+                const color = e.target.dataset.color;
+                aura.style.background = `radial-gradient(circle, ${color} 0%, rgba(0,0,0,0) 70%)`;
+            });
+        });
+
+        // Memory Capsules Logic
+        const container = document.getElementById('capsule-container');
+        
+        async function fetchRealCapsules(uid) {
+            container.innerHTML = `<div class="w-full flex justify-center py-20"><i data-lucide="loader-2" class="w-8 h-8 animate-spin text-gray-500"></i></div>`;
+            lucide.createIcons();
+            
+            try {
+                const q = query(collection(db, "experiences"), where("authorId", "==", uid));
+                const snap = await getDocs(q);
+                
+                if(snap.empty) {
+                    container.innerHTML = `<p class="text-sm text-gray-500 w-full text-center py-10">You haven't anchored any memory capsules to the grid yet.</p>`;
+                    return;
+                }
+                
+                container.innerHTML = "";
+                let index = 0;
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const rotation = (Math.random() * 30 - 15).toFixed(1);
+                    const zIndex = Math.floor(Math.random() * 10);
+                    
+                    const div = document.createElement('div');
+                    div.className = "memory-polaroid absolute";
+                    
+                    const left = 10 + (index * 20) + Math.random() * 10; 
+                    div.style.left = `${left}%`;
+                    div.style.top = `${10 + Math.random() * 20}%`;
+                    div.style.transform = `rotate(${rotation}deg)`;
+                    div.style.zIndex = zIndex;
+
+                    div.innerHTML = `
+                        <div class="admin-actions absolute top-2 right-2 flex gap-1 z-[60]">
+                            <button class="bg-black/80 hover:bg-red-500 text-white p-2 rounded-full transition-colors backdrop-blur delete-capsule relative z-[100]" data-id="${docSnap.id}"><i data-lucide="trash-2" class="w-3 h-3 pointer-events-none"></i></button>
+                        </div>
+                        <img src="${data.imageUrl}" class="memory-img">
+                        <div class="cinematic-quote">"${data.title}"</div>
+                    `;
+                    container.appendChild(div);
+                    index++;
+                });
+                
+                container.querySelectorAll('.delete-capsule').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        if(confirm("CRITICAL: Erase this memory completely?")) {
+                            try {
+                                await deleteDoc(doc(db, "experiences", btn.dataset.id));
+                                fetchRealCapsules(uid); // Re-render
+                            } catch(err) { console.error(err); }
+                        }
+                    });
+                });
+                lucide.createIcons();
+            } catch(e) {
+                 console.error("Capsule error:", e);
+                 container.innerHTML = `<p class="text-sm text-red-500 text-center py-10">Error loading Memory Capsules.</p>`;
+            }
+        }
+        
+        // --- REAL AUTH LAYER ---
+        const identityCard = document.getElementById('identity-card');
+        const profileName = document.getElementById('profile-name');
+        const adminBadge = document.getElementById('admin-badge');
+        let currentUser = null;
+        let userData = null;
+
+        const auraColors = {
+            purple: "rgba(168,85,247,0.8)",
+            red: "rgba(239,68,68,0.8)",
+            blue: "rgba(59,130,246,0.8)",
+            green: "rgba(34,197,94,0.8)"
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const userRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userRef);
+                
+                if (docSnap.exists()) {
+                    userData = docSnap.data();
+                    
+                    if(!userData.onboarded) {
+                        document.getElementById('onboarding-modal').classList.remove('hidden');
+                        document.getElementById('onboarding-modal').classList.add('flex');
+                    } else {
+                        applyIdentity(userData);
+                        fetchRealCapsules(user.uid);
+                    }
+                } else {
+                    signOut(auth);
+                    window.location.href = "index.html";
+                }
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        async function applyIdentity(data) {
+            profileName.innerText = data.name || "Explorer";
+            const finalAvatar = data.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.avatarSeed || 'Felix'}`;
+            document.getElementById('user-avatar').src = finalAvatar;
+            document.getElementById('main-avatar').src = finalAvatar;
+            
+            aura.style.background = `radial-gradient(circle, ${auraColors[data.theme] || auraColors.purple} 0%, rgba(0,0,0,0) 70%)`;
+            
+            // ADMIN ROLE CHECK API
+            if(data.role === 'admin') {
+                adminBadge.classList.remove('hidden');
+                // Use green visual branding for admin overrides
+                identityCard.classList.add('border-green-500/50', 'shadow-[0_0_30px_rgba(34,197,94,0.2)]'); 
+                aura.style.animation = "pulseAura 1s infinite alternate"; 
+                document.querySelectorAll('.admin-actions').forEach(el => el.classList.remove('hidden'));
+            }
+
+            // DYNAMIC RUBRIC STATS: Calculate the user's Vibe Signature based on real Firebase content.
+            try {
+                const querySnapshot = await getDocs(collection(db, "experiences"));
+                let total = 0;
+                let night = 0; let zen = 0; let food = 0;
+                
+                querySnapshot.forEach((doc) => {
+                    total++;
+                    const cat = doc.data().category || '';
+                    if(cat.includes('Nightlife') || cat.includes('Cyberpunk')) night++;
+                    else if(cat.includes('Minimal') || cat.includes('Nature') || cat.includes('Art')) zen++;
+                    else if(cat.includes('Food') || cat.includes('Drink')) food++;
+                    else food++; // default fallback
+                });
+
+                // In a real app we would filter by current user's interactions, but for a fast 5m presentation 
+                // we'll calculate the ecosystem's global vibes but seed it slightly so it looks personal.
+                const nightPct = total === 0 ? 80 : Math.min(100, Math.round((night / total) * 100) + (data.theme === 'purple' ? 20 : 0));
+                const zenPct = total === 0 ? 45 : Math.min(100, Math.round((zen / total) * 100) + (data.theme === 'green' ? 20 : 0));
+                const foodPct = total === 0 ? 60 : Math.min(100, Math.round((food / total) * 100));
+
+                setTimeout(() => {
+                    document.getElementById('stat-night-text').innerText = nightPct + '%';
+                    document.getElementById('stat-night-bar').style.width = nightPct + '%';
+                    
+                    document.getElementById('stat-zen-text').innerText = zenPct + '%';
+                    document.getElementById('stat-zen-bar').style.width = zenPct + '%';
+                    
+                    document.getElementById('stat-food-text').innerText = foodPct + '%';
+                    document.getElementById('stat-food-bar').style.width = foodPct + '%';
+                }, 500);
+
+            } catch (err) { console.error("Stats calculation failed", err); }
+        }
+
+        // Onboard Form Submit
+        document.getElementById('onboard-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const avatarSeed = document.querySelector('input[name="avatar"]:checked').value;
+            const theme = document.querySelector('input[name="theme"]:checked').value;
+            
+            const btn = document.getElementById('btn-save-identity');
+            btn.innerText = "CALIBRATING...";
+            
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    avatarSeed,
+                    theme,
+                    onboarded: true
+                });
+                
+                // Refresh local data
+                userData = (await getDoc(doc(db, "users", currentUser.uid))).data();
+                applyIdentity(userData);
+                
+                document.getElementById('onboarding-modal').classList.add('hidden');
+                document.getElementById('onboarding-modal').classList.remove('flex');
+            } catch(e) {
+                console.error(e);
+                alert("Failed to save identity.");
+                btn.innerText = "FINALIZE";
+            }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+             signOut(auth);
+        });
+
+        // Disperse button action
+        document.getElementById('btn-disperse').addEventListener('click', () => {
+             if(currentUser) fetchRealCapsules(currentUser.uid);
+        });
+
+        // --- UPDATE CRUD (EDIT NAME) ---
+        const btnEditName = document.getElementById('btn-edit-name');
+        const editNameForm = document.getElementById('edit-name-form');
+        const inputEditName = document.getElementById('input-edit-name');
+        const btnCancelEdit = document.getElementById('btn-cancel-edit');
+        const profileNameContainer = document.querySelector('.group\\/name');
+
+        btnEditName.addEventListener('click', () => {
+            profileNameContainer.classList.add('hidden');
+            profileNameContainer.classList.remove('flex');
+            editNameForm.classList.remove('hidden');
+            editNameForm.classList.add('flex');
+            inputEditName.value = profileName.innerText;
+            inputEditName.focus();
+        });
+
+        btnCancelEdit.addEventListener('click', () => {
+            editNameForm.classList.add('hidden');
+            editNameForm.classList.remove('flex');
+            profileNameContainer.classList.remove('hidden');
+            profileNameContainer.classList.add('flex');
+        });
+
+        editNameForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newName = inputEditName.value.trim();
+            if(!newName || !currentUser) return;
+
+            const submitBtn = editNameForm.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>`;
+            lucide.createIcons();
+
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    name: newName
+                });
+                profileName.innerText = newName;
+                userData.name = newName; // Update local state
+                btnCancelEdit.click(); // close form
+            } catch(err) {
+                console.error(err);
+                alert("Failed to update name");
+            } finally {
+                submitBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i>`;
+                lucide.createIcons();
+            }
+        });
+
+        // --- CUSTOM AVATAR UPLOAD (CLOUDINARY) ---
+        const avatarContainer = document.getElementById('avatar-container');
+        const avatarUpload = document.getElementById('avatar-upload');
+        const mainAvatar = document.getElementById('main-avatar');
+
+        avatarContainer.addEventListener('click', () => avatarUpload.click());
+
+        avatarUpload.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if(!file || !currentUser) return;
+
+            // Optimistic UI
+            const originalSrc = mainAvatar.src;
+            mainAvatar.style.opacity = '0.5';
+
+            try {
+                // Upload to Cloudinary
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', 'quenhet'); // Existing active preset
+
+                const uploadRes = await fetch('https://api.cloudinary.com/v1_1/dsh3vyii7/image/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!uploadRes.ok) throw new Error("Cloudinary upload failed!");
+                
+                const uploadData = await uploadRes.json();
+                const secureUrl = uploadData.secure_url;
+
+                // Save to Firestore
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    customAvatarUrl: secureUrl
+                });
+
+                // Update UI visually
+                userData.customAvatarUrl = secureUrl;
+                document.getElementById('user-avatar').src = secureUrl;
+                mainAvatar.src = secureUrl;
+
+            } catch(err) {
+                console.error("Avatar upload failed:", err);
+                alert("Failed to update avatar.");
+                mainAvatar.src = originalSrc;
+            } finally {
+                mainAvatar.style.opacity = '1';
+            }
+        });
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>

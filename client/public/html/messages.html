@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe | Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body class="bg-black text-white h-screen flex flex-col overflow-hidden">
+
+    <div class="aurora-bg opacity-30"></div>
+
+    <!-- NAVBAR -->
+    <nav class="w-full z-50 glass-nav px-6 py-4 flex justify-between items-center border-b border-white/10 shrink-0">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">V</div>
+            <a href="home.html" class="text-xl font-bold font-space tracking-tighter hover:text-purple-400 transition-colors">Vibe.</a>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8">
+            <a href="home.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors">Explore</a>
+            <a href="chat.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors"><i data-lucide="bot" class="w-3 h-3 inline"></i> Oracle AI</a>
+            <a href="messages.html" class="text-xs font-bold tracking-widest uppercase border-b-2 border-purple-500 pb-1 flex items-center gap-2"><i data-lucide="message-square" class="w-3 h-3"></i> Network</a>
+            <a href="bookmarks.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors">Bookmarks</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <a href="profile.html" class="w-10 h-10 rounded-full bg-zinc-800 border border-white/10 overflow-hidden cursor-pointer block hover:ring-2 hover:ring-purple-500 transition-all">
+                <img id="user-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" class="w-full h-full object-cover">
+            </a>
+        </div>
+    </nav>
+
+    <!-- CHAT LAYOUT -->
+    <main class="flex-1 max-w-6xl mx-auto w-full flex flex-col md:flex-row relative z-10 p-4 md:p-8 overflow-hidden h-full gap-6">
+        
+        <!-- SIDEBAR (Users List) -->
+        <div class="glass-card w-full md:w-1/3 rounded-3xl border border-white/10 p-4 flex flex-col h-[30vh] md:h-full shrink-0 shadow-2xl shadow-purple-900/10">
+            <h3 class="text-lg font-bold font-space mb-4 flex items-center gap-2 px-2 text-purple-400"><i data-lucide="users" class="w-5 h-5"></i> Global Network</h3>
+            <div class="relative mb-4">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                <input type="text" placeholder="Search Explorers..." class="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-xs focus:outline-none focus:border-purple-500/50">
+            </div>
+            <div id="users-list" class="flex-1 overflow-y-auto no-scrollbar space-y-1">
+                <!-- User items here -->
+                <div class="text-center py-10 opacity-50"><i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto mb-2"></i><p class="text-xs font-mono tracking-widest">SCANNING...</p></div>
+            </div>
+        </div>
+
+        <!-- MAIN CHAT -->
+        <div class="glass-card flex-1 rounded-3xl border border-white/10 p-4 md:p-8 flex flex-col relative overflow-hidden h-[60vh] md:h-full shadow-[0_0_50px_rgba(168,85,247,0.1)]">
+            
+            <div id="chat-header" class="border-b border-white/10 pb-4 mb-4 hidden items-center gap-4 shrink-0 transition-opacity">
+                <img id="active-chat-avatar" class="w-12 h-12 rounded-full object-cover bg-black border border-white/20 shadow-xl">
+                <div>
+                    <h3 id="active-chat-name" class="font-bold text-xl font-space leading-tight tracking-tighter text-white">...</h3>
+                    <p class="text-xs text-green-400 font-mono tracking-widest uppercase flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> Encrypted Link Active</p>
+                </div>
+            </div>
+
+            <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-gray-500 transition-opacity">
+                <div class="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mb-6 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)]">
+                    <i data-lucide="radio" class="w-8 h-8 opacity-70"></i>
+                </div>
+                <h3 class="font-space text-lg text-white mb-2">No Frequency Selected</h3>
+                <p class="font-mono text-xs opacity-60 text-center max-w-xs leading-relaxed">Select an explorer from the global network to establish a secure peer-to-peer connection.</p>
+            </div>
+
+            <div id="chat-box" class="flex-1 overflow-y-auto w-full no-scrollbar space-y-4 pb-20 hidden">
+                <!-- Messages go here -->
+            </div>
+
+            <!-- INPUT AREA -->
+            <div id="input-area" class="absolute bottom-4 md:bottom-8 left-4 md:left-8 right-4 md:right-8 bg-black/80 backdrop-blur-xl border border-white/10 p-2 rounded-2xl hidden items-end gap-2 shadow-2xl z-20">
+                <textarea id="chat-input" rows="1" class="w-full bg-transparent text-white px-4 py-3 focus:outline-none resize-none no-scrollbar text-sm" placeholder="Transmit message..."></textarea>
+                <button id="btn-send" class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 hover:bg-white hover:text-black transition-colors cursor-pointer shadow-lg shadow-purple-600/20 active:scale-95">
+                    <i data-lucide="send" class="w-4 h-4 pointer-events-none"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, addDoc, getDoc, doc, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBImD4KXKJSZ94QqIMjnu54NRHaQu7dvnY",
+            authDomain: "jsitest-d2e8e.firebaseapp.com",
+            projectId: "jsitest-d2e8e",
+            storageBucket: "jsitest-d2e8e.firebasestorage.app",
+            messagingSenderId: "879082552061",
+            appId: "1:879082552061:web:292f08bbdf316a2bed9c94"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        lucide.createIcons();
+
+        let currentUser = null;
+        let activeChatUserId = null;
+        let unsubscribeMessages = null;
+
+        // AUTH & AVATAR
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                if(docSnap.exists()){
+                    currentUser = { uid: user.uid, ...docSnap.data() };
+                    document.getElementById('user-avatar').src = currentUser.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.avatarSeed || 'Felix'}`;
+                    loadUsers();
+                }
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        async function loadUsers() {
+            const usersRef = collection(db, "users");
+            const snap = await getDocs(usersRef);
+            const list = document.getElementById('users-list');
+            list.innerHTML = "";
+            snap.forEach(docSnap => {
+                const u = { uid: docSnap.id, ...docSnap.data() };
+                if(u.uid === currentUser.uid) return; // skip self
+
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition-colors border border-transparent hover:border-white/10 group";
+                div.innerHTML = `
+                    <div class="relative shrink-0">
+                        <img src="${u.customAvatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed='+(u.avatarSeed || 'Felix')}" class="w-12 h-12 rounded-full bg-black border border-white/20 group-hover:border-purple-500 transition-colors object-cover">
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-black rounded-full"></div>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-bold truncate group-hover:text-purple-300 transition-colors">${u.name}</p>
+                        <p class="text-[10px] text-gray-500 font-mono uppercase tracking-widest">${u.role}</p>
+                    </div>
+                `;
+                div.addEventListener('click', () => {
+                    // Visual active state
+                    document.querySelectorAll('#users-list > div').forEach(el => el.classList.remove('bg-white/10', 'border-white/20'));
+                    div.classList.add('bg-white/10', 'border-white/20');
+                    openChat(u);
+                });
+                list.appendChild(div);
+            });
+        }
+
+        function getChatId(uid1, uid2) {
+            return [uid1, uid2].sort().join('_');
+        }
+
+        function openChat(targetUser) {
+            activeChatUserId = targetUser.uid;
+            
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('chat-header').classList.remove('hidden');
+            document.getElementById('chat-header').classList.add('flex');
+            document.getElementById('chat-box').classList.remove('hidden');
+            document.getElementById('input-area').classList.remove('hidden');
+            document.getElementById('input-area').classList.add('flex');
+
+            document.getElementById('active-chat-avatar').src = targetUser.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${targetUser.avatarSeed || 'Felix'}`;
+            document.getElementById('active-chat-name').innerText = targetUser.name;
+
+            if(unsubscribeMessages) unsubscribeMessages();
+
+            const chatId = getChatId(currentUser.uid, targetUser.uid);
+            
+            // Note: We are using a client-side filter instead of a complex index-query 
+            // to bypass the Firebase Missing Index crash if the user doesn't have the explicit composite index built.
+            const queryRef = query(collection(db, "direct_messages"), orderBy("createdAt", "asc"));
+            
+            unsubscribeMessages = onSnapshot(queryRef, (snapshot) => {
+                const box = document.getElementById('chat-box');
+                box.innerHTML = "";
+                
+                // Client-side filter AND ID mapping
+                const messages = snapshot.docs.map(d => ({id: d.id, ...d.data()})).filter(m => m.chatId === chatId);
+                
+                messages.forEach(msg => {
+                    const isMe = msg.senderId === currentUser.uid;
+                    renderMessage(msg, isMe, targetUser);
+                });
+
+                // STREAK ANALYZER ALGORITHM
+                let streak = 0;
+                if(messages.length > 0) {
+                    const activeDays = new Set();
+                    messages.forEach(m => {
+                        const d = new Date(m.createdAt);
+                        activeDays.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+                    });
+                    
+                    const today = new Date();
+                    let checkDate = new Date(today);
+                    
+                    // Allow 1 day grace period exactly like TikTok
+                    let key = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
+                    if(!activeDays.has(key)) {
+                        checkDate.setDate(checkDate.getDate() - 1);
+                        key = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
+                    }
+
+                    while(activeDays.has(key)) {
+                        streak++;
+                        checkDate.setDate(checkDate.getDate() - 1);
+                        key = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
+                    }
+                }
+
+                // INJECT STREAK UI
+                let badgeContainer = document.getElementById('chat-streak-badge');
+                if(!badgeContainer) {
+                    badgeContainer = document.createElement('div');
+                    badgeContainer.id = 'chat-streak-badge';
+                    const targetDiv = document.getElementById('active-chat-name').nextElementSibling;
+                    targetDiv.parentNode.insertBefore(badgeContainer, targetDiv.nextSibling);
+                }
+
+                if(streak > 0) {
+                    badgeContainer.className = "mt-1 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 text-[10px] font-black uppercase tracking-widest text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]";
+                    badgeContainer.innerHTML = `🔥 ${streak} DAY LINK`;
+                } else {
+                    badgeContainer.className = "mt-1 inline-flex items-center gap-1 text-[10px] text-gray-500 font-mono tracking-widest uppercase";
+                    badgeContainer.innerHTML = `⏳ NEW LINK`;
+                }
+                
+                lucide.createIcons();
+                box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+            });
+        }
+
+        function renderMessage(msg, isMe, targetUser) {
+            const box = document.getElementById('chat-box');
+            const div = document.createElement('div');
+            div.className = `group relative flex gap-3 items-end max-w-3xl ${isMe ? 'ml-auto flex-row-reverse' : ''}`;
+            
+            const avatarSrc = isMe ? 
+                (currentUser.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.avatarSeed || 'Felix'}`) : 
+                (targetUser.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${targetUser.avatarSeed || 'Felix'}`);
+
+            const colors = isMe ? 'bg-purple-600 text-white rounded-tr-sm shadow-md shadow-purple-900/20' : 'bg-white/10 border border-white/10 text-gray-200 rounded-tl-sm';
+            
+            // ACTION CONTROLS (EDIT/DELETE)
+            let controls = '';
+            if(isMe) {
+                const safeText = msg.text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                controls = `
+                    <div class="absolute -left-12 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="window.editMsg('${msg.id}', '${safeText}')" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white text-gray-400 hover:text-black flex items-center justify-center transition-all"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+                        <button onclick="window.delMsg('${msg.id}')" class="w-6 h-6 rounded-full bg-white/10 hover:bg-red-500 text-gray-400 hover:text-white flex items-center justify-center transition-all"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                    </div>
+                `;
+            }
+
+            const editedTag = msg.isEdited ? `<span class="text-[9px] opacity-50 ml-2 font-mono italic">(edited)</span>` : '';
+
+            div.innerHTML = `
+                <img src="${avatarSrc}" class="w-8 h-8 rounded-full shrink-0 border border-white/20 mb-1 object-cover">
+                <div class="relative ${colors} px-5 py-3 rounded-2xl text-sm leading-relaxed max-w-[85%] whitespace-pre-wrap font-inter">
+                    ${msg.text}${editedTag}
+                    ${controls}
+                </div>
+            `;
+            box.appendChild(div);
+        }
+
+        async function handleSend() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(!text || !activeChatUserId) return;
+            
+            input.value = '';
+            const chatId = getChatId(currentUser.uid, activeChatUserId);
+
+            // Add Message
+            await addDoc(collection(db, "direct_messages"), {
+                chatId,
+                senderId: currentUser.uid,
+                text,
+                createdAt: new Date().toISOString()
+            });
+            
+            // Generate notification for the receiver
+            await addDoc(collection(db, "notifications"), {
+                targetUserId: activeChatUserId,
+                actorName: currentUser.name,
+                type: 'message',
+                expTitle: 'Sent you a DM',
+                createdAt: new Date().toISOString(),
+                read: false
+            });
+        }
+
+        document.getElementById('btn-send').addEventListener('click', handleSend);
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+            }
+        });
+
+        // GLOBAL BINDINGS FOR EDIT/DELETE HOOKS
+        window.editMsg = async (docId, currentText) => {
+            const newText = prompt("Recalibrate Transmission:", currentText);
+            if(newText && newText.trim() !== currentText && newText.trim().length > 0) {
+                try {
+                    await updateDoc(doc(db, "direct_messages", docId), {
+                        text: newText.trim(),
+                        isEdited: true
+                    });
+                } catch(e) { console.error("Update failed", e); }
+            }
+        };
+
+        window.delMsg = async (docId) => {
+            if(confirm("CRITICAL: Erase this transmission from the network?")) {
+                try {
+                    await deleteDoc(doc(db, "direct_messages", docId));
+                } catch(e) { console.error("Deletion failed", e); }
+            }
+        };
+    </script>
+</body>
+</html>

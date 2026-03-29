@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe | Hand-picked Experiences</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body class="bg-black text-white min-h-screen">
+
+    <audio id="bg-music" loop pre-load="auto">
+    <source src="../assets/hk.mp3" type="audio/mpeg">
+    <source src="../assets/ana.mp3" type="audio/mpeg">
+    <source src="../assets/tnye.mp3" type="audio/mpeg">
+</audio>
+
+
+    <div class="aurora-bg"></div>
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full z-50 glass-nav px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">V</div>
+            <h1 class="text-xl font-bold font-space tracking-tighter">Vibe.</h1>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8">
+            <a href="home.html" class="text-xs font-bold tracking-widest uppercase border-b-2 border-purple-500 pb-1">Explore</a>
+            <a href="chat.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5"><i data-lucide="bot" class="w-3 h-3 inline"></i> Oracle AI</a>
+            <a href="messages.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5"><i data-lucide="message-square" class="w-3 h-3 inline"></i> Network</a>
+            <a href="bookmarks.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors">Bookmarks</a>
+            <div class="relative group mt-1">
+                <button id="btn-notifications" class="text-gray-500 hover:text-white transition-colors flex items-center justify-center p-1" title="System Alerts">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                    <span id="notif-badge" class="absolute flex h-2 w-2 top-0 right-0 hidden z-10">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                </button>
+                
+                <!-- Notification Dropdown -->
+                <div id="notif-dropdown-wrapper" class="absolute top-full right-0 mt-4 w-72 md:w-80 glass-card border border-white/10 rounded-2xl shadow-2xl overflow-hidden hidden transform transition-all origin-top-right z-[150] bg-black/90 backdrop-blur-3xl">
+                    <div class="p-3 border-b border-white/10 flex justify-between items-center bg-zinc-950">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">System Alerts</span>
+                        <button id="btn-clear-notifs" class="text-[9px] text-purple-400 hover:text-purple-300 uppercase font-mono">Clear Feed</button>
+                    </div>
+                    <div id="notif-dropdown" class="max-h-64 overflow-y-auto no-scrollbar">
+                        <div class="flex justify-center py-4"><i data-lucide="loader-2" class="w-4 h-4 animate-spin text-gray-500"></i></div>
+                    </div>
+                </div>
+            </div>
+            <button id="btn-checkin-desktop" class="bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-xl shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 hover:-translate-y-0.5 transition-all">Check-In</button>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button id="btn-admin" class="hidden text-[10px] border border-green-500/50 text-green-500 px-2 py-1 rounded font-mono">ADMIN</button>
+            <a href="profile.html" class="w-10 h-10 rounded-full bg-zinc-800 border border-white/10 overflow-hidden cursor-pointer block hover:ring-2 hover:ring-purple-500 transition-all">
+                <img id="user-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar">
+            </a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="pt-32 pb-12 px-6 max-w-7xl mx-auto text-center">
+        <h2 class="text-5xl md:text-7xl font-bold font-space tracking-tighter mb-6">
+            Find your next <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">story.</span>
+        </h2>
+
+        <!-- MOOD SEARCH -->
+        <div class="max-w-2xl mx-auto mb-8 relative">
+            <div class="search-container flex items-center p-2 rounded-2xl">
+                <i data-lucide="search" class="search-icon ml-4 w-5 h-5 text-gray-500 transition-colors"></i>
+                <input type="text" id="mood-search" placeholder="Search experiences, vibes, or 'late night food'..." class="bg-transparent w-full p-4 outline-none text-white placeholder-gray-600">
+                <button id="surprise-me" class="btn-surprise hidden md:flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs whitespace-nowrap">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    SURPRISE ME
+                </button>
+            </div>
+        </div>
+
+        <!-- LIVE STATS STRIP -->
+        <div class="stats-strip py-3 flex items-center justify-center gap-8 mb-12">
+            <div class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-gray-500">
+                <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                <span id="live-users">12</span> EXPLORING NOW
+            </div>
+            <div class="w-[1px] h-3 bg-white/10"></div>
+            <div class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                ⚡ <span id="new-count">3</span> ADDED TODAY
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPLORE BODY -->
+    <main class="px-6 max-w-7xl mx-auto pb-20">
+        
+        <!-- VIBE FILTERS -->
+        <div class="flex gap-4 mb-12 overflow-x-auto pb-6 no-scrollbar items-center">
+            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mr-2 flex items-center gap-2"><i data-lucide="activity" class="w-3 h-3 text-purple-500"></i> Vibe Sync</span>
+            
+            <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-white text-black text-xs font-bold whitespace-nowrap active overflow-hidden group shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all hover:scale-105" data-vibe="All">
+                <span class="relative z-10 w-full text-center">Vibe Check (All)</span>
+            </button>
+            <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-black border border-white/10 text-white text-xs font-bold whitespace-nowrap overflow-hidden group hover:border-purple-500 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)]" data-vibe="My Crew">
+                <span class="relative z-10">My Crew 👯</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </button>
+            <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-black border border-white/10 text-white text-xs font-bold whitespace-nowrap overflow-hidden group hover:border-orange-500 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)]" data-vibe="Local Legends">
+                <span class="relative z-10">Local Legends 👑</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-red-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </button>
+            <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-black border border-white/10 text-white text-xs font-bold whitespace-nowrap overflow-hidden group hover:border-blue-500 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]" data-vibe="Late Night Bites">
+                <span class="relative z-10">Late Night Bites 🍜</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </button>
+            <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-black border border-white/10 text-white text-xs font-bold whitespace-nowrap overflow-hidden group hover:border-green-500 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)]" data-vibe="Hidden Escapes">
+                <span class="relative z-10">Hidden Escapes 🗺️</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-green-600/20 to-emerald-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </button>
+        </div>
+
+        <!-- HUMANIZED LAYOUT RE-STRUCTURE -->
+        <div id="human-layout">
+            <!-- PROMOTED HIGHLIGHTS -->
+            <div id="promoted-container" class="mb-12 hidden">
+                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="megaphone" class="w-5 h-5 text-yellow-500"></i> Promoted Experiences</h3>
+                <div id="feed-promoted" class="flex overflow-x-auto gap-6 pb-4 no-scrollbar snap-x"></div>
+            </div>
+
+            <!-- TRENDING TONIGHT -->
+            <div id="trending-container" class="mb-12 hidden">
+                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-purple-500"></i> Trending Tonight</h3>
+                <div id="feed-trending" class="flex overflow-x-auto gap-6 pb-4 no-scrollbar snap-x"></div>
+            </div>
+
+            <!-- AROUND NEAR ME -->
+            <div id="near-container" class="mb-12 hidden">
+                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-5 h-5 text-blue-500"></i> Around Near Me</h3>
+                <div id="feed-near" class="flex overflow-x-auto gap-6 pb-4 no-scrollbar snap-x"></div>
+            </div>
+
+            <!-- NEW UPLOADS -->
+            <div id="fresh-container" class="mb-8">
+                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-5 h-5 text-green-500"></i> Fresh Community Drops</h3>
+                <div id="feed-fresh" class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                    <!-- Skeleton Loaders -->
+                    <div class="h-80 w-full rounded-3xl bg-white/5 animate-pulse break-inside-avoid"></div>
+                    <div class="h-96 w-full rounded-3xl bg-white/5 animate-pulse break-inside-avoid"></div>
+                    <div class="h-64 w-full rounded-3xl bg-white/5 animate-pulse break-inside-avoid"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 border-t border-white/10 bg-black/50 backdrop-blur-xl py-12 px-6 relative z-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-purple-600 rounded flex items-center justify-center font-bold text-[10px]">V</div>
+                <span class="text-sm font-bold font-space tracking-tighter">Vibe.</span>
+            </div>
+            <p class="text-[10px] text-gray-500 font-mono uppercase tracking-widest">© 2026 Vibe Ecosystem. All rights reserved.</p>
+            <div class="flex items-center gap-4">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CHECK-IN MODAL -->
+    <div id="checkin-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl hidden items-center justify-center p-4">
+        <div class="glass-card w-full max-w-lg rounded-3xl p-6 border border-white/10 relative overflow-hidden">
+            <button id="close-checkin" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-black/50 p-2 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h2 class="text-2xl font-bold font-space mb-6">Drop a Pin.</h2>
+            
+            <form id="checkin-form" class="space-y-4">
+                <!-- Dropzone -->
+                <div id="ci-drop-zone" class="w-full aspect-square md:aspect-[4/3] border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center hover:border-purple-500/50 hover:bg-purple-500/5 cursor-pointer relative overflow-hidden group transition-all">
+                    <i data-lucide="camera" class="w-10 h-10 text-gray-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Visual Asset (Required)</span>
+                    <input type="file" id="ci-image" accept="image/*,video/*" multiple required class="absolute inset-0 opacity-0 cursor-pointer">
+                    <img id="ci-preview" class="absolute inset-0 w-full h-full object-cover hidden">
+                </div>
+                
+                <input type="text" id="ci-title" placeholder="Where are you? (Keep it minimal)" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-purple-500/50 text-sm font-bold placeholder-gray-600 transition-colors">
+                
+                <div class="flex flex-col md:flex-row gap-3">
+                    <input type="text" id="ci-tags" placeholder="#vibes, #late-night" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-purple-500/50 text-xs font-mono placeholder-gray-600 transition-colors">
+                    <select id="ci-category" class="w-full md:w-1/3 bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white text-xs font-bold focus:outline-none focus:border-purple-500/50 appearance-none transition-colors" required>
+                        <option value="My Crew" class="bg-zinc-900">My Crew</option>
+                        <option value="Local Legends" class="bg-zinc-900">Local Legends</option>
+                        <option value="Hidden Escapes" class="bg-zinc-900">Hidden Escapes</option>
+                        <option value="Late Night Bites" class="bg-zinc-900">Late Night Bites</option>
+                    </select>
+                </div>
+                
+                <button type="submit" id="ci-submit" class="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-purple-500 hover:text-white transition-all flex justify-center gap-2 items-center active:scale-[0.98]">
+                    <span id="ci-btn-text">POST CHECK-IN</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS container -->
+    <div id="toast-container" class="fixed top-24 right-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- MOBILE FAB (Locket-style bottom action button) -->
+    <button id="btn-checkin-mobile" class="fixed bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full shadow-[0_10px_40px_rgba(168,85,247,0.5)] flex items-center justify-center text-white z-50 md:hidden hover:scale-110 active:scale-95 transition-all">
+        <i data-lucide="plus" class="w-8 h-8"></i>
+    </button>
+
+    <!-- THE GLASS DETAIL MODAL (CLEAN AESTHETIC) -->
+    <div id="detail-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl hidden items-center justify-center p-0 md:p-6 transition-all">
+        <!-- Ultra-clean glass window -->
+        <div class="w-full h-full md:h-[85vh] md:max-h-[900px] md:max-w-5xl md:rounded-[40px] border border-white/10 relative overflow-hidden flex flex-col md:flex-row shadow-2xl shadow-purple-900/20 bg-black/60 transition-all transform scale-95 opacity-0 duration-300" id="detail-card">
+            
+            <!-- MOBILE: Floating Close Btn -->
+            <button id="close-detail" class="absolute top-6 right-6 z-[110] text-white bg-black/40 backdrop-blur-lg p-3 rounded-full md:hidden hover:bg-black/60 transition-all border border-white/10"><i data-lucide="x" class="w-5 h-5"></i></button>
+
+            <!-- LEFT: Core Visual Hero -->
+            <div class="w-full md:w-[60%] h-[55vh] md:h-full relative bg-zinc-950 group flex-shrink-0">
+                <img id="dt-image" src="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500">
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
+
+                <!-- Price/Status Tag -->
+                <div class="absolute top-6 left-6 z-30 flex items-center gap-2">
+                    <div id="dt-price-tag" class="text-xs font-bold bg-white/10 backdrop-blur-xl px-4 py-2 rounded-full text-white border border-white/20 shadow-lg">$15.00</div>
+                    <div id="dt-gallery-count" class="text-[10px] font-bold bg-black/50 backdrop-blur-xl px-3 py-2 rounded-full text-white hidden items-center gap-1 border border-white/10"><i data-lucide="layers" class="w-3 h-3"></i> 1/5</div>
+                </div>
+
+                <!-- Minimalist Swiping Controls -->
+                <button id="dt-prev" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl p-3 rounded-full text-white border border-white/20 opacity-0 group-hover:opacity-100 transition-all hover:bg-white/30 hover:scale-110 z-20 shadow-xl"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                <button id="dt-next" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl p-3 rounded-full text-white border border-white/20 opacity-0 group-hover:opacity-100 transition-all hover:bg-white/30 hover:scale-110 z-20 shadow-xl"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                
+                <!-- Gallery specific dots -->
+                 <div id="dt-gallery-dots" class="absolute bottom-6 left-0 w-full flex justify-center gap-2 z-20 hidden">
+                 </div>
+            </div>
+
+            <!-- RIGHT: Community Flow -->
+            <div class="w-full md:w-[40%] h-[45vh] md:h-full flex flex-col relative bg-zinc-950/80 backdrop-blur-md">
+                
+                <!-- PC: Desktop Close Btn -->
+                <button id="close-detail-desktop" class="hidden md:flex absolute top-6 right-6 z-[110] text-gray-400 hover:text-white transition-all bg-white/5 p-2 rounded-full border border-white/10 hover:bg-white/10"><i data-lucide="x" class="w-4 h-4"></i></button>
+
+                <!-- 1. Minimal Header -->
+                <div class="p-4 md:px-8 md:py-6 border-b border-white/5 flex flex-col z-10 bg-transparent">
+                    <div class="flex items-center gap-3">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-10 h-10 rounded-full border border-white/10 bg-zinc-800 p-0.5 shadow-md">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-white tracking-wide">Explorer_09</span>
+                            <span id="dt-location" class="text-[10px] text-gray-400 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3 text-purple-500"></i> Sector 7</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Clean Scrolling Content -->
+                <div class="flex-1 overflow-y-auto no-scrollbar p-4 md:px-8">
+                    <!-- Text Content -->
+                    <div class="mb-6 pb-6 border-b border-white/5">
+                        <span id="dt-category" class="text-[10px] font-bold text-purple-400 bg-purple-500/10 px-2 py-1 rounded-sm uppercase tracking-widest mb-3 inline-block">Category</span>
+                        <h2 id="dt-title" class="text-2xl md:text-3xl font-bold font-space leading-tight text-white mb-2">Title</h2>
+                        <p id="dt-tags" class="text-xs font-mono text-blue-400 opacity-80 mt-2">#vibes</p>
+                    </div>
+
+                    <!-- Clean Vibe Checks -->
+                    <div id="review-list" class="space-y-5 pb-4">
+                        <!-- Injected chat -->
+                    </div>
+                </div>
+
+                <!-- 3. Elegant Action Bar -->
+                <div class="border-t border-white/5 bg-zinc-950 p-4 md:px-8 md:py-6 flex flex-col gap-4 z-10">
+                    <div class="flex items-center gap-6">
+                        <button id="dt-like-btn" class="text-white hover:text-red-500 transition-colors focus:outline-none hover:scale-110 active:scale-95"><i data-lucide="heart" class="w-6 h-6"></i></button>
+                        <button id="dt-reply-btn" class="text-white hover:text-blue-500 transition-colors focus:outline-none hover:scale-110"><i data-lucide="message-circle" class="w-6 h-6"></i></button>
+                        <button id="dt-share-btn" class="text-white hover:text-green-500 transition-all focus:outline-none hover:-translate-y-1 hover:translate-x-1"><i data-lucide="send" class="w-6 h-6"></i></button>
+                        
+                        <!-- Author Modification Powers -->
+                        <div id="dt-author-controls" class="ml-auto flex items-center gap-3 hidden">
+                            <button id="btn-edit-post" class="text-gray-500 hover:text-white transition-colors p-1" title="Edit Vibe"><i data-lucide="settings" class="w-4 h-4"></i></button>
+                            <button id="btn-delete-post" class="text-gray-500 hover:text-red-500 transition-colors p-1" title="Delete Vibe"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div id="dt-likes-count" class="text-[11px] text-white font-bold tracking-wide">0 likes</div>
+                    
+                    <form id="review-form" class="flex gap-2 items-center relative mt-1">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Me" class="w-7 h-7 rounded-full bg-zinc-800 hidden md:block border border-white/10">
+                        <input type="text" id="rv-text" placeholder="Add a vibe check..." required class="flex-1 bg-transparent border-none p-2 text-white outline-none focus:ring-0 text-sm placeholder-gray-500 transition-all font-inter">
+                        <button type="submit" class="text-purple-500 font-bold text-sm hover:text-purple-400 transition-colors focus:outline-none pr-2">Post</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE & LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, getDoc, doc, updateDoc, deleteDoc, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBImD4KXKJSZ94QqIMjnu54NRHaQu7dvnY",
+            authDomain: "jsitest-d2e8e.firebaseapp.com",
+            projectId: "jsitest-d2e8e",
+            storageBucket: "jsitest-d2e8e.firebasestorage.app",
+            messagingSenderId: "879082552061",
+            appId: "1:879082552061:web:292f08bbdf316a2bed9c94"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        lucide.createIcons();
+
+        // References for new Layout Feeds
+        const feedPromoted = document.getElementById('feed-promoted');
+        const feedTrending = document.getElementById('feed-trending');
+        const feedNear = document.getElementById('feed-near');
+        const feedFresh = document.getElementById('feed-fresh');
+        const moodSearch = document.getElementById('mood-search');
+        let allExperiences = [];
+        let currentUserData = null; // Stored global identity
+        let currentUserId = null;
+
+        // TOAST ENGINE
+        function showToast(title, msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "glass-card border border-white/10 p-4 rounded-2xl shadow-xl flex items-start gap-4 transform translate-x-[120%] transition-transform duration-300 pointer-events-auto bg-black/80 backdrop-blur-md";
+            toast.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center filter drop-shadow-[0_0_10px_purple]"><i data-lucide="bell" class="w-4 h-4"></i></div>
+                <div class="flex-1">
+                    <h4 class="text-xs font-bold text-white uppercase tracking-widest">${title}</h4>
+                    <p class="text-[10px] text-gray-400 font-mono mt-1">${msg}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            // Slide in
+            requestAnimationFrame(() => toast.classList.remove('translate-x-[120%]'));
+            
+            // Notification Bell Ping Active
+            document.getElementById('notif-badge').classList.remove('hidden');
+
+            // Slide out & remove after 5s
+            setTimeout(() => {
+                toast.classList.add('translate-x-[120%]');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+        
+        const notifDropdownWrapper = document.getElementById('notif-dropdown-wrapper');
+        document.getElementById('btn-notifications').addEventListener('click', (e) => {
+             e.stopPropagation();
+             document.getElementById('notif-badge').classList.add('hidden');
+             notifDropdownWrapper.classList.toggle('hidden');
+        });
+        
+        document.getElementById('btn-clear-notifs').addEventListener('click', async () => {
+             if(!currentUserId) return;
+             const container = document.getElementById('notif-dropdown');
+             container.innerHTML = `<div class="flex justify-center py-4"><i data-lucide="loader-2" class="w-4 h-4 animate-spin text-gray-500"></i></div>`;
+             lucide.createIcons();
+             try {
+                const q = query(collection(db, "notifications"), where("targetUserId", "==", currentUserId));
+                const snaps = await getDocs(q);
+                for(let d of snaps.docs) {
+                     await deleteDoc(doc(db, "notifications", d.id));
+                }
+             } catch(e) {}
+        });
+
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('#btn-notifications') && !e.target.closest('#notif-dropdown-wrapper')) {
+                notifDropdownWrapper.classList.add('hidden');
+            }
+        });
+
+        // 1. SYNC AVATAR & PROTECT ROUTE
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                
+                // Mount Real-Time Notifications
+                const notifQuery = query(collection(db, "notifications"), where("targetUserId", "==", user.uid));
+                onSnapshot(notifQuery, (snapshot) => {
+                    const container = document.getElementById('notif-dropdown');
+                    if(!container) return;
+                    
+                    let unread = 0;
+                    const notifs = [];
+                    snapshot.forEach(dSnapshot => notifs.push(dSnapshot.data()));
+                    notifs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort safely bypassing Index requirements
+                    
+                    container.innerHTML = "";
+                    notifs.forEach(data => {
+                         unread++;
+                         const actionText = data.type === 'like' ? 'loved' : 'vibed on';
+                         container.innerHTML += `
+                            <div class="flex items-start gap-3 p-3 hover:bg-white/5 border-b border-white/5 transition-colors cursor-pointer" onclick="document.getElementById('notif-dropdown-wrapper').classList.add('hidden');">
+                                <img src="${data.actorAvatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=N'}" class="w-8 h-8 rounded-full border border-white/10 bg-zinc-900 object-cover mt-1 flex-shrink-0">
+                                <div class="flex-1">
+                                    <p class="text-[11px] text-gray-300 leading-snug"><span class="font-bold text-white tracking-wide">${data.actorName}</span> ${actionText} your post <span class="text-purple-400 font-bold">"${data.expTitle || 'Memory'}"</span></p>
+                                    <span class="text-[9px] text-gray-600 font-mono mt-0.5 block">${new Date(data.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                </div>
+                            </div>
+                         `;
+                    });
+
+                    if(unread > 0) {
+                        document.getElementById('notif-badge').classList.remove('hidden');
+                    } else {
+                        container.innerHTML = `<p class="p-4 text-[10px] text-gray-500 text-center uppercase tracking-widest font-mono">No System Alerts</p>`;
+                    }
+                });
+
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if(docSnap.exists()){
+                        const data = docSnap.data();
+                        currentUserData = data;
+                        document.getElementById('user-avatar').src = data.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.avatarSeed || 'Felix'}`;
+                        if(data.role === 'admin') {
+                            const adminBtn = document.getElementById('btn-admin');
+                            adminBtn.classList.remove('hidden');
+                            adminBtn.addEventListener('click', () => window.location.href = 'admin-dashboard.html');
+                        }
+                    }
+                } catch(e) { console.error(e); }
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        // 2. FETCH REAL DATA FROM FIREBASE
+        async function fetchData() {
+            try {
+                const q = query(collection(db, "experiences"), orderBy("createdAt", "desc"));
+                const snap = await getDocs(q);
+                allExperiences = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // PRIORITIZE ADMIN POSTS
+                allExperiences.sort((a, b) => {
+                    if(a.isAdmin && !b.isAdmin) return -1;
+                    if(!a.isAdmin && b.isAdmin) return 1;
+                    return 0; 
+                });
+
+                renderCards(allExperiences);
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = `<p class="text-gray-500">Failed to load system.</p>`;
+            }
+        }
+
+        function buildCardElement(exp, isPromotedOverride = false, renderingType = 'masonry') {
+            const isTonight = exp.category === "My Crew" || Math.random() > 0.8;
+            const isPromoted = isPromotedOverride || exp.isPromoted; 
+            const promotedHTML = isPromoted ? `<div class="absolute top-4 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded shadow-[0_0_15px_rgba(234,179,8,0.5)] z-20 border border-yellow-300/50 flex items-center gap-1"><i data-lucide="megaphone" class="w-3 h-3"></i> Promoted</div>` : '';
+            
+            // Detect Gallery Support
+            const isGallery = exp.imageUrls && Array.isArray(exp.imageUrls) && exp.imageUrls.length > 1;
+            const galleryIconHTML = isGallery ? `<div class="absolute top-4 left-4 z-20 bg-black/70 backdrop-blur-md px-2 py-1 rounded border border-white/20 text-white flex items-center gap-1"><i data-lucide="copy" class="w-3 h-3"></i> <span class="text-[9px] font-black tracking-widest">${exp.imageUrls.length}</span></div>` : '';
+            const countdownHTML = isTonight && !isGallery ? '<div class="absolute top-4 left-4 z-20 countdown-badge px-3 py-1 rounded text-[9px] font-black text-white">⏳ TONIGHT ONLY</div>' : '';
+
+            const card = document.createElement('div');
+            
+            // Layout styling
+            const isSystem = exp.isAdmin && !exp.authorName;
+            const finalAvatar = isSystem ? "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'/%3E%3C/svg%3E" : (exp.authorAvatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix');
+            const finalName = isSystem ? "VIBE CORE" : (exp.authorName || 'Explorer');
+            const avatarColorClass = isSystem ? "bg-purple-600 border-purple-400 p-1 shadow-[0_0_10px_purple]" : "bg-black border-white/20";
+            const nameColorClass = isSystem ? "text-purple-400 font-black drop-shadow-[0_0_5px_purple]" : "";
+
+            if(renderingType === 'horizontal') {
+                card.className = "experience-card group cursor-pointer w-64 md:w-72 shrink-0 snap-start relative";
+                card.innerHTML = `
+                    <div class="relative w-full aspect-[4/5] rounded-[2rem] overflow-hidden glass-card border border-white/10 flex items-center justify-center hover:border-purple-500/50 transition-colors">
+                        ${countdownHTML}
+                        ${galleryIconHTML}
+                        ${promotedHTML}
+                        <img src="${exp.imageUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter group-hover:saturate-150">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex items-end opacity-90 transition-opacity">
+                            <div class="p-6 w-full">
+                                <span class="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em] mb-2 block">${exp.category}</span>
+                                <h3 class="text-xl font-black font-space leading-tight mb-3 tracking-tighter shadow-black drop-shadow-lg">${exp.title}</h3>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <button class="focus:outline-none"><i data-lucide="heart" class="w-3 h-3 ${exp.likes && exp.likes.includes(currentUserId) ? 'text-red-500 fill-red-500' : 'text-gray-400'}"></i></button>
+                                        <span class="text-[10px] font-bold text-white tracking-widest" id="card-like-${exp.id}">${exp.likes ? exp.likes.length : 0}</span>
+                                    </div>
+                                    <div class="text-[10px] font-bold uppercase tracking-widest text-green-400 border border-green-500/30 px-2 py-0.5 bg-green-900/20">${exp.price && exp.price > 0 ? '$'+exp.price : 'ACCESS'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Details -->
+                        <div class="absolute inset-x-0 bottom-0 bg-black/90 backdrop-blur-3xl border-t border-white/10 p-5 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 z-30 pointer-events-none flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <img src="${finalAvatar}" class="w-8 h-8 rounded-full border ${avatarColorClass}">
+                                <span class="text-xs font-bold font-mono tracking-tight ${nameColorClass}">${finalName}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 duration-300 pointer-events-none text-right">
+                                <i data-lucide="clock" class="w-3 h-3 text-purple-400"></i>
+                                <span class="text-[10px] text-gray-400 font-mono tracking-tighter">${timeAgo(exp.createdAt)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                card.className = "experience-card group cursor-pointer break-inside-avoid relative mb-6";
+                const hClass = (exp.title.length % 3 === 0) ? "aspect-[3/4]" : (exp.title.length % 2 === 0 ? "aspect-square" : "aspect-[4/5]");
+                card.innerHTML = `
+                    <div class="relative w-full ${hClass} rounded-tl-3xl rounded-br-3xl overflow-hidden glass-card border border-white/5 flex items-center justify-center hover:border-cyan-500/50 transition-colors">
+                        ${countdownHTML}
+                        ${galleryIconHTML}
+                        ${promotedHTML}
+                        <img src="${exp.imageUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter group-hover:saturate-150">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                        <div class="absolute bottom-6 left-6 right-6 z-20">
+                            <span class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em] mb-1 block">${exp.category}</span>
+                            <h3 class="text-lg font-black font-space leading-tight mb-2 uppercase tracking-tighter">${exp.title}</h3>
+                            <div class="flex items-center justify-between">
+                                 <div class="flex items-center gap-1">
+                                    <i data-lucide="heart" class="w-3 h-3 ${exp.likes && exp.likes.includes(currentUserId) ? 'text-red-500 fill-red-500' : 'text-gray-400'}"></i>
+                                    <span class="text-[10px] font-bold text-white tracking-widest" id="card-like-${exp.id}">${exp.likes ? exp.likes.length : 0}</span>
+                                </div>
+                                <div class="text-[10px] font-bold uppercase tracking-widest text-green-400 border border-green-500/30 px-2 py-0.5 bg-green-900/20">${exp.price && exp.price > 0 ? '$'+exp.price : 'ACCESS'}</div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Details -->
+                        <div class="absolute inset-x-0 bottom-0 bg-black/90 backdrop-blur-3xl border-t border-white/10 p-5 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 z-30 pointer-events-none flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <img src="${finalAvatar}" class="w-8 h-8 rounded-full border ${avatarColorClass}">
+                                <span class="text-xs font-bold font-mono tracking-tight ${nameColorClass}">${finalName}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 duration-300 pointer-events-none text-right">
+                                <i data-lucide="clock" class="w-3 h-3 text-cyan-400"></i>
+                                <span class="text-[10px] text-gray-400 font-mono tracking-tighter">${timeAgo(exp.createdAt)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            card.addEventListener('click', () => openDetailModal(exp));
+            return card;
+        }
+
+        // 3. RENDER ALL CARDS - DISTRIBUTED SPREAD
+        function renderCards(data) {
+            feedPromoted.innerHTML = "";
+            feedTrending.innerHTML = "";
+            feedNear.innerHTML = "";
+            feedFresh.innerHTML = "";
+            
+            document.getElementById('promoted-container').classList.add('hidden');
+            document.getElementById('trending-container').classList.add('hidden');
+            document.getElementById('near-container').classList.add('hidden');
+
+            if(data.length === 0) {
+                feedFresh.innerHTML = `<p class="col-span-full text-center py-20 text-gray-600">No vibes found.</p>`;
+                return;
+            }
+
+            // Distribute exactly based on Assigned Section
+            const promotedItems = data.filter(exp => exp.section === 'Promoted');
+            const trendingItems = data.filter(exp => exp.section === 'Trending');
+            const nearItems = data.filter(exp => exp.section === 'NearMe');
+            const freshItems = data.filter(exp => exp.section === 'Fresh' || !exp.section); // Defaulting anything missing to Fresh
+
+            // 1. Promoted
+            if(promotedItems.length > 0) {
+                promotedItems.forEach(pExp => feedPromoted.appendChild(buildCardElement(pExp, true, 'horizontal')));
+                document.getElementById('promoted-container').classList.remove('hidden');
+            }
+
+            // 2. Trending
+            if(trendingItems.length > 0) {
+                trendingItems.forEach(t => feedTrending.appendChild(buildCardElement(t, false, 'horizontal')));
+                document.getElementById('trending-container').classList.remove('hidden');
+            }
+
+            // 3. Near Me
+            if(nearItems.length > 0) {
+                nearItems.forEach(n => feedNear.appendChild(buildCardElement(n, false, 'horizontal')));
+                document.getElementById('near-container').classList.remove('hidden');
+            }
+
+            // 4. Fresh Community
+            window.freshFeedExpanded = window.freshFeedExpanded || false;
+            const freshLimit = window.freshFeedExpanded ? freshItems.length : 8;
+            const freshToShow = freshItems.slice(0, freshLimit);
+
+            if(freshToShow.length > 0) {
+                freshToShow.forEach(f => feedFresh.appendChild(buildCardElement(f, false, 'masonry')));
+                
+                // Show or Hide EXPANSE button
+                let expanderBtn = document.getElementById('vibe-check-expand');
+                if(!window.freshFeedExpanded && freshItems.length > 8) {
+                    if(!expanderBtn) {
+                        const btnWrap = document.createElement('div');
+                        btnWrap.id = 'vibe-check-expand';
+                        btnWrap.className = "flex justify-center mt-12 w-full pt-4";
+                        btnWrap.innerHTML = `<button onclick="window.freshFeedExpanded=true; fetchData()" class="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-mono text-xs px-8 py-3 rounded-full uppercase tracking-widest transition-colors shadow-xl group"><i data-lucide="chevron-down" class="w-4 h-4 inline mb-0.5 group-hover:translate-y-1 transition-transform"></i> Load Full Database</button>`;
+                        feedFresh.parentNode.insertBefore(btnWrap, feedFresh.nextSibling);
+                    } else {
+                        expanderBtn.style.display = 'flex';
+                    }
+                } else if(expanderBtn) {
+                    expanderBtn.style.display = 'none';
+                }
+            } else if (data.length > 0) {
+                // If there weren't enough items, just put something in Fresh so it doesn't look broken
+                feedFresh.innerHTML = `<p class="col-span-full text-center py-20 text-gray-600 text-xs font-mono">- Feed catch up achieved -</p>`;
+            }
+
+            lucide.createIcons();
+        }
+
+        // --- CHECK-IN LOGIC ---
+        const btnCheckinDesktop = document.getElementById('btn-checkin-desktop');
+        const btnCheckinMobile = document.getElementById('btn-checkin-mobile');
+        const checkinModal = document.getElementById('checkin-modal');
+        const closeCheckin = document.getElementById('close-checkin');
+        const ciImageInput = document.getElementById('ci-image');
+        const ciPreview = document.getElementById('ci-preview');
+        const checkinForm = document.getElementById('checkin-form');
+        const ciBtnText = document.getElementById('ci-btn-text');
+
+        // Toggle Modal
+        function openCheckInModal(e) {
+            e.preventDefault();
+            checkinModal.classList.remove('hidden');
+            checkinModal.classList.add('flex');
+        }
+        if(btnCheckinDesktop) btnCheckinDesktop.addEventListener('click', openCheckInModal);
+        if(btnCheckinMobile) btnCheckinMobile.addEventListener('click', openCheckInModal);
+
+        closeCheckin.addEventListener('click', () => {
+             checkinModal.classList.add('hidden');
+             checkinModal.classList.remove('flex');
+        });
+
+        // Image Preview
+        ciImageInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    ciPreview.src = e.target.result;
+                    ciPreview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(files[0]); // preview first image
+                
+                // Show badge if multiple
+                const existingBadge = ciPreview.parentNode.querySelector('.gallery-badge');
+                if(existingBadge) existingBadge.remove();
+                if(files.length > 1) {
+                    const badge = document.createElement('div');
+                    badge.className = "gallery-badge absolute top-4 right-4 bg-purple-600 border border-purple-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg z-30 tracking-widest uppercase";
+                    badge.innerText = `+${files.length - 1} MORE`;
+                    ciPreview.parentNode.appendChild(badge);
+                }
+            }
+        });
+
+        // Upload Form Submit
+        checkinForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const files = ciImageInput.files;
+            if(files.length === 0) return alert("A visual asset is required to Check-In.");
+
+            const isGallery = files.length > 1;
+            ciBtnText.innerText = isGallery ? `UPLOADING ${files.length} ASSETS...` : "UPLOADING TO SATELLITE...";
+            
+            try {
+                // Parallel upload orchestration via Promise.all
+                const uploadPromises = Array.from(files).map(async (file) => {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', 'quenhet');
+                    
+                    const uploadRes = await fetch('https://api.cloudinary.com/v1_1/dsh3vyii7/image/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!uploadRes.ok) {
+                        const errData = await uploadRes.json();
+                        throw new Error(errData.error?.message || "Cloudinary upload failed!");
+                    }
+                    
+                    const uploadData = await uploadRes.json();
+                    return uploadData.secure_url;
+                });
+
+                const uploadedUrls = await Promise.all(uploadPromises);
+
+                ciBtnText.innerText = "ANCHORING TO GRID...";
+                
+                // Add absolute author identity payload
+                const identityPayload = typeof currentUserData !== 'undefined' && currentUserData ? {
+                    authorName: currentUserData.name || "Explorer",
+                    authorAvatar: currentUserData.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserData.avatarSeed || 'Felix'}`,
+                    authorId: currentUserId
+                } : {};
+
+                await addDoc(collection(db, "pending_experiences"), {
+                    title: document.getElementById('ci-title').value,
+                    category: document.getElementById('ci-category').value,
+                    tags: document.getElementById('ci-tags').value,
+                    imageUrl: uploadedUrls[0], // primary
+                    galleryUrls: isGallery ? uploadedUrls : [],
+                    price: 0, // Default for free user checkins
+                    createdAt: new Date().toISOString(),
+                    isAdmin: false,
+                    ...identityPayload
+                });
+                
+                ciBtnText.innerText = "PIN DROPPED!";
+                setTimeout(() => {
+                    checkinModal.classList.add('hidden');
+                    checkinForm.reset();
+                    ciPreview.classList.add('hidden');
+                    const existingBadge = ciPreview.parentNode.querySelector('.gallery-badge');
+                    if(existingBadge) existingBadge.remove();
+                    ciBtnText.innerText = "POST CHECK-IN";
+                    fetchData(); // Reload Feed
+                }, 1000);
+
+            } catch(err) {
+                console.error(err);
+                alert("Upload failed. " + err.message);
+                ciBtnText.innerText = "POST CHECK-IN";
+            }
+        });
+
+        // --- THE HOLOGRAPHIC DETAIL MODAL LOGIC & GALLERY ENGINE ---
+        const detailModal = document.getElementById('detail-modal');
+        const detailCard = document.getElementById('detail-card');
+        const dtImage = document.getElementById('dt-image');
+        const countBadge = document.getElementById('dt-gallery-count');
+        const dtPrev = document.getElementById('dt-prev');
+        const dtNext = document.getElementById('dt-next');
+        const dtDotsContainer = document.getElementById('dt-gallery-dots');
+        
+        let currentExpId = null;
+        let activeGallery = [];
+        let galleryIndex = 0;
+
+        function updateGalleryView() {
+            dtImage.src = activeGallery[galleryIndex];
+            if(activeGallery.length > 1) {
+                countBadge.innerText = `${galleryIndex + 1} / ${activeGallery.length}`;
+            }
+            
+            // Render and Bind Dots specifically for interactive dotswiping
+            if(activeGallery.length > 1) {
+                dtDotsContainer.innerHTML = "";
+                for(let i=0; i<activeGallery.length; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = `cursor-pointer w-2 h-2 rounded-full transition-all hover:bg-white/80 ${i === galleryIndex ? 'bg-white scale-125' : 'bg-white/30'}`;
+                    dot.addEventListener('click', () => {
+                        galleryIndex = i;
+                        updateGalleryView();
+                    });
+                    dtDotsContainer.appendChild(dot);
+                }
+            }
+        }
+
+        dtPrev.addEventListener('click', () => {
+             if(activeGallery.length <= 1) return;
+             galleryIndex = (galleryIndex - 1 + activeGallery.length) % activeGallery.length;
+             updateGalleryView();
+        });
+
+        dtNext.addEventListener('click', () => {
+             if(activeGallery.length <= 1) return;
+             galleryIndex = (galleryIndex + 1) % activeGallery.length;
+             updateGalleryView();
+        });
+
+        // LIKES ENGINE
+        document.getElementById('dt-like-btn').addEventListener('click', async (e) => {
+            if(!currentExpId) return;
+            if(!currentUserId) {
+                showToast("Access Denied", "Connect identity to interact.");
+                return;
+            }
+            const btn = e.currentTarget;
+            
+            // Find current exp reference
+            const expIndex = allExperiences.findIndex(ex => ex.id === currentExpId);
+            if(expIndex === -1) return;
+            const exp = allExperiences[expIndex];
+            
+            if(!exp.likes) exp.likes = [];
+            const hasLiked = exp.likes.includes(currentUserId);
+            const svg = btn.querySelector('svg');
+            
+            // Optimistic UI Toggle
+            if(hasLiked) {
+                exp.likes = exp.likes.filter(id => id !== currentUserId);
+                btn.classList.remove('text-red-500');
+                btn.classList.add('text-white');
+                if(svg) svg.classList.remove('fill-red-500');
+            } else {
+                exp.likes.push(currentUserId);
+                btn.classList.add('text-red-500');
+                btn.classList.remove('text-white');
+                if(svg) svg.classList.add('fill-red-500');
+                showToast("Vibe Synced", "You loved this post.");
+                
+                // NOTIFICATION: Dispatch to Firebase
+                if(exp.authorId && exp.authorId !== currentUserId) {
+                    try {
+                        const actorN = typeof currentUserData !== 'undefined' && currentUserData ? currentUserData.name : "Explorer";
+                        const actorA = typeof currentUserData !== 'undefined' && currentUserData ? currentUserData.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserData.avatarSeed}` : "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest";
+                        addDoc(collection(db, "notifications"), {
+                            targetUserId: exp.authorId,
+                            actorName: actorN,
+                            actorAvatar: actorA,
+                            type: 'like',
+                            expTitle: exp.title,
+                            createdAt: new Date().toISOString()
+                        });
+                    } catch(e) { console.error("Notif failed", e); }
+                }
+            }
+            
+            document.getElementById('dt-likes-count').innerText = `${exp.likes.length} likes`;
+            
+            // Sync the Grid Card visually
+            const gridCount = document.getElementById(`card-like-${currentExpId}`);
+            if(gridCount) {
+                gridCount.innerText = exp.likes.length;
+                const gridIcon = gridCount.previousElementSibling;
+                if(hasLiked) {
+                    gridIcon.classList.remove('fill-red-500', 'text-red-500');
+                    gridIcon.classList.add('text-gray-400');
+                } else {
+                    gridIcon.classList.add('fill-red-500', 'text-red-500');
+                    gridIcon.classList.remove('text-gray-400');
+                }
+            }
+
+            // DB sync
+            try {
+                await updateDoc(doc(db, "experiences", currentExpId), { likes: exp.likes });
+            } catch(err) {
+                console.error("Like update failed:", err);
+            }
+        });
+
+        // Animate out function
+        function closeDetail() {
+            detailCard.classList.remove('scale-100', 'opacity-100');
+            detailCard.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                detailModal.classList.add('hidden');
+                detailModal.classList.remove('flex');
+            }, 300);
+        }
+
+        async function openDetailModal(exp) {
+            currentExpId = exp.id;
+            
+            // Build Gallery Array
+            activeGallery = (exp.imageUrls && Array.isArray(exp.imageUrls) && exp.imageUrls.length > 0) ? exp.imageUrls : [exp.imageUrl];
+            galleryIndex = 0;
+            
+            if (activeGallery.length > 1) {
+                dtPrev.style.display = 'block';
+                dtNext.style.display = 'block';
+                countBadge.style.display = 'block';
+                dtDotsContainer.classList.remove('hidden');
+            } else {
+                dtPrev.style.display = 'none';
+                dtNext.style.display = 'none';
+                countBadge.style.display = 'none';
+                dtDotsContainer.classList.add('hidden');
+            }
+            
+            updateGalleryView();
+            document.getElementById('dt-title').innerText = exp.title;
+            document.getElementById('dt-category').innerText = exp.category;
+            
+            // Override modal header with true authorship if provided
+            const headerAvatar = document.querySelector('#detail-modal img[src*="api.dicebear.com"]');
+            const headerName = document.querySelector('#detail-modal .text-sm.font-bold.text-white.tracking-wide');
+            const headerLocation = document.getElementById('dt-location');
+            if(headerAvatar) headerAvatar.src = exp.authorAvatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin';
+            if(headerName) headerName.innerText = exp.authorName || 'Ecosystem Core';
+            if(headerLocation) {
+                const tagStr = exp.tags ? exp.tags.split(',')[0].replace(/#/g, '').trim() : 'The Grid';
+                headerLocation.innerHTML = `<i data-lucide="map-pin" class="w-3 h-3 text-purple-500"></i> ${tagStr || 'Uncharted'}`;
+            }
+            
+            const pVal = parseInt(exp.price) || 0;
+            const priceEl = document.getElementById('dt-price-tag');
+            if(pVal === 0) {
+                 priceEl.innerText = "Free Access";
+            } else {
+                 priceEl.innerText = `$${pVal}.00`;
+            }
+            
+            // Sync Like Button State globally
+            const likesArr = exp.likes || [];
+            const dtLikeBtn = document.getElementById('dt-like-btn');
+            document.getElementById('dt-likes-count').innerText = `${likesArr.length} likes`;
+            const svg = dtLikeBtn.querySelector('svg');
+            
+            if(likesArr.includes(currentUserId)) {
+                dtLikeBtn.classList.add('text-red-500');
+                dtLikeBtn.classList.remove('text-white');
+                if(svg) svg.classList.add('fill-red-500');
+            } else {
+                dtLikeBtn.classList.remove('text-red-500');
+                dtLikeBtn.classList.add('text-white');
+                if(svg) svg.classList.remove('fill-red-500');
+            }
+
+            // Reveal Author Superpowers (Edit/Delete)
+            const authorControls = document.getElementById('dt-author-controls');
+            const isSuperAdmin = currentUserData && currentUserData.role === 'admin';
+            
+            if(currentUserId && (exp.authorId === currentUserId || isSuperAdmin)) {
+                authorControls.classList.remove('hidden');
+                
+                // Unbind previous duplicate listeners to cleanly add new ones
+                const btnEdit = document.getElementById('btn-edit-post');
+                const btnDelete = document.getElementById('btn-delete-post');
+                const newBtnEdit = btnEdit.cloneNode(true);
+                const newBtnDelete = btnDelete.cloneNode(true);
+                btnEdit.parentNode.replaceChild(newBtnEdit, btnEdit);
+                btnDelete.parentNode.replaceChild(newBtnDelete, btnDelete);
+                
+                newBtnEdit.addEventListener('click', async () => {
+                    const newTitle = prompt("Recalibrate Vibe Title:", exp.title);
+                    if(newTitle && newTitle.trim().length > 0) {
+                        try {
+                            await updateDoc(doc(db, "experiences", currentExpId), { title: newTitle.trim() });
+                            document.getElementById('dt-title').innerText = newTitle.trim();
+                            exp.title = newTitle.trim();
+                            showToast("System Updated", "Title successfully recalibrated.");
+                            
+                            // Immediately update the feed logic visually too
+                            fetchData(); 
+                        } catch(err) { console.error(err); alert("Update Failed"); }
+                    }
+                });
+
+                newBtnDelete.addEventListener('click', async () => {
+                    if(confirm("CRITICAL: Erase this trace from the ecosystem permanently?")) {
+                        try {
+                            await deleteDoc(doc(db, "experiences", currentExpId));
+                            closeDetail();
+                            showToast("Trace Erased", "Post destroyed from grid.");
+                            fetchData(); // reload UI
+                        } catch(err) { console.error(err); alert("Deletion Failed."); }
+                    }
+                });
+            } else {
+                authorControls.classList.add('hidden');
+            }
+            
+            detailModal.classList.remove('hidden');
+            detailModal.classList.add('flex');
+            
+            // Animation trigger
+            setTimeout(() => {
+                detailCard.classList.remove('scale-95', 'opacity-0');
+                detailCard.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            loadReviews(exp.id);
+        }
+
+        document.getElementById('close-detail').addEventListener('click', closeDetail);
+        
+        const desktopClose = document.getElementById('close-detail-desktop');
+        if(desktopClose) desktopClose.addEventListener('click', closeDetail);
+
+        async function loadReviews(expId) {
+            const list = document.getElementById('review-list');
+            list.innerHTML = `<div class="flex justify-center py-10"><i data-lucide="loader-2" class="w-6 h-6 animate-spin text-gray-500"></i></div>`;
+            lucide.createIcons();
+            
+            try {
+                const q = query(collection(db, `experiences/${expId}/reviews`), orderBy("createdAt", "desc"));
+                const snap = await getDocs(q);
+                
+                list.innerHTML = "";
+                if(snap.empty) {
+                     list.innerHTML = `<p class="text-sm text-gray-500 text-center py-10">No vibe checks yet. Be the first.</p>`;
+                     return;
+                }
+
+                snap.forEach(docSnap => {
+                     const data = docSnap.data();
+                     const div = document.createElement('div');
+                     div.className = "flex items-start gap-3 w-full group";
+                     
+                     const storedAvatar = data.authorAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`;
+                     const storedName = data.authorName || "Explorer";
+
+                     // 1. Tag comments if they were created by the Post's Author
+                     const postAuthor = allExperiences.find(e => e.id === expId)?.authorId;
+                     const isCreator = data.authorId && data.authorId === postAuthor;
+                     const badgeHTML = isCreator ? `<span class="bg-purple-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest ml-1 shadow-[0_0_10px_purple]">Creator</span>` : "";
+
+                     // 2. Allow Post Author to delete any comments on their post
+                     const canDelete = currentUserId && (currentUserId === postAuthor || data.authorId === currentUserId);
+                     const deleteHTML = canDelete ? `<button class="delete-review text-gray-700 hover:text-red-500 ml-auto transition-colors z-10 relative" data-id="${docSnap.id}"><i data-lucide="x" class="w-3 h-3"></i></button>` : "";
+
+                     div.innerHTML = `
+                        <img src="${storedAvatar}" class="w-8 h-8 rounded-full border border-white/10 bg-zinc-900 flex-shrink-0 mt-1 shadow-sm object-cover">
+                        <div class="flex-1">
+                            <div class="flex items-center w-full">
+                                <span class="text-[11px] font-bold text-gray-200 mr-1 tracking-wide">${storedName}</span>
+                                ${badgeHTML}
+                                ${deleteHTML}
+                            </div>
+                            <span class="text-sm text-gray-300 leading-snug">${data.text}</span>
+                            <div class="flex items-center gap-4 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="text-[10px] text-gray-500 font-bold hover:text-white transition-colors cursor-pointer comment-reply-btn" data-name="${storedName}">Reply</span>
+                            </div>
+                        </div>
+                        <i data-lucide="heart" class="w-3 h-3 text-gray-600 cursor-pointer hover:text-red-500 hover:fill-red-500 mt-2 flex-shrink-0 transition-all"></i>
+                     `;
+                     list.appendChild(div);
+                });
+                lucide.createIcons();
+
+                // Bind delete comment powers
+                list.querySelectorAll('.delete-review').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        if(confirm("Erase this vibe check?")) {
+                            try {
+                                await deleteDoc(doc(db, `experiences/${expId}/reviews`, btn.dataset.id));
+                                loadReviews(expId); // redraw
+                                showToast("Check Erased", "Comment cleanly wiped.");
+                            } catch(err) { console.error(err); }
+                        }
+                    });
+                });
+
+                // Bind inline reply powers
+                list.querySelectorAll('.comment-reply-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const input = document.getElementById('rv-text');
+                        if(input) {
+                            input.value = `@${btn.dataset.name} `;
+                            input.focus();
+                        }
+                    });
+                });
+            } catch(e) {
+                console.error(e);
+                list.innerHTML = `<p class="text-sm text-red-500 text-center py-10">Error loading reviews.</p>`;
+            }
+        }
+
+        document.getElementById('review-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!currentExpId) return;
+            const text = document.getElementById('rv-text').value;
+            if(!text) return;
+            
+            const btn = e.target.querySelector('button');
+            const originalIcon = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>`;
+            lucide.createIcons();
+            
+            try {
+                // Identity Payload for Review
+                const identityPayload = currentUserData ? {
+                    authorName: currentUserData.name || "Explorer",
+                    authorAvatar: currentUserData.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserData.avatarSeed || 'Felix'}`,
+                    authorId: currentUserId
+                } : {};
+
+                await addDoc(collection(db, `experiences/${currentExpId}/reviews`), {
+                    text,
+                    createdAt: new Date().toISOString(),
+                    ...identityPayload
+                });
+                
+                // NOTIFICATION: Record Comment
+                const expIndex = allExperiences.findIndex(ex => ex.id === currentExpId);
+                const exp = allExperiences[expIndex];
+                if(exp && exp.authorId && exp.authorId !== currentUserId) {
+                    try {
+                        const actorN = typeof currentUserData !== 'undefined' && currentUserData ? currentUserData.name : "Explorer";
+                        const actorA = typeof currentUserData !== 'undefined' && currentUserData ? currentUserData.customAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserData.avatarSeed}` : "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest";
+                        addDoc(collection(db, "notifications"), {
+                            targetUserId: exp.authorId,
+                            actorName: actorN,
+                            actorAvatar: actorA,
+                            type: 'comment',
+                            expTitle: exp.title,
+                            createdAt: new Date().toISOString()
+                        });
+                    } catch(e) { console.error("Notif failed", e); }
+                }
+                
+                document.getElementById('rv-text').value = "";
+                showToast("Received", "Vibe Sync Complete.");
+                loadReviews(currentExpId);
+            } catch(err) {
+                console.error(err);
+                alert("Failed to submit review.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalIcon;
+                lucide.createIcons();
+            }
+        });
+
+        // 4. MOOD SEARCH LOGIC
+        moodSearch.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.experience-card'); // Fixed for multi-container
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if(text.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // ACTION BUTTONS (Reply & Share)
+        document.getElementById('dt-reply-btn').addEventListener('click', (e) => {
+             e.preventDefault();
+             const input = document.getElementById('rv-text');
+             if(input) {
+                 setTimeout(() => input.focus(), 50);
+             }
+        });
+        document.getElementById('dt-share-btn').addEventListener('click', () => {
+             navigator.clipboard.writeText(window.location.href);
+             showToast("Link Copied", "Vibe URL saved to clipboard");
+        });
+
+        // 5. VIBE FILTER LOGIC
+        document.querySelectorAll('.vibe-filter').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update UI active state
+                document.querySelectorAll('.vibe-filter').forEach(b => {
+                    b.classList.remove('bg-white', 'text-black', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]');
+                    b.classList.add('bg-black', 'text-white');
+                });
+                btn.classList.add('bg-white', 'text-black', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]');
+                btn.classList.remove('bg-black', 'text-white');
+
+                const vibe = btn.dataset.vibe;
+                if(vibe === "All") renderCards(allExperiences);
+                else {
+                    const filtered = allExperiences.filter(exp => exp.category === vibe);
+                    renderCards(filtered);
+                }
+            });
+        });
+
+        // 6. SURPRISE ME (Random Picker)
+        document.getElementById('surprise-me').addEventListener('click', () => {
+            if(allExperiences.length > 0) {
+                const random = allExperiences[Math.floor(Math.random() * allExperiences.length)];
+                alert(`How about this: ${random.title}?`);
+                // In Phase 2, we would scroll to that card or open its detail page
+            }
+        });
+
+        // Start
+        fetchData();
+
+        // Simulate Live Stats
+        setInterval(() => {
+            document.getElementById('live-users').innerText = Math.floor(Math.random() * 5) + 10;
+        }, 5000);
+
+        // Time function globally injected
+        function timeAgo(dateStr) {
+            if(!dateStr) return "Just now";
+            const ms = new Date() - new Date(dateStr);
+            const seconds = Math.floor(ms / 1000);
+            if(seconds < 60) return "Just now";
+            const minutes = Math.floor(seconds / 60);
+            if(minutes < 60) return `${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            if(hours < 24) return `${hours}h ago`;
+            const days = Math.floor(hours / 24);
+            if(days < 30) return `${days}d ago`;
+            const months = Math.floor(days / 30);
+            if(months < 12) return `${months}mo ago`;
+            return `${Math.floor(months/12)}y ago`;
+        }
+
+    </script>
+    <script type="module" src="../js/audio.js"></script>
+</body>
+</html>

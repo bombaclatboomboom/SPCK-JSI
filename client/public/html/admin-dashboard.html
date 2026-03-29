@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe | System Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body class="bg-black text-white min-h-screen selection:bg-green-500/30">
+
+    <div class="aurora-bg opacity-40"></div>
+
+    <!-- ADMIN NAV -->
+    <nav class="fixed top-0 w-full z-50 glass-nav px-8 py-5 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <h1 class="text-xs font-bold font-mono tracking-[0.3em] text-green-500 uppercase">System Terminal v1.0.4</h1>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <a href="home.html" class="group flex items-center gap-2 text-[10px] font-bold tracking-widest text-gray-400 hover:text-white transition-all uppercase">
+                <i data-lucide="external-link" class="w-3 h-3 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"></i>
+                Public View
+            </a>
+            <div class="h-4 w-[1px] bg-white/10"></div>
+            <button id="btn-logout" class="text-[10px] font-bold tracking-widest text-red-500 hover:text-red-400 uppercase">Disconnect</button>
+        </div>
+    </nav>
+
+    <main class="relative z-10 pt-32 px-8 max-w-6xl mx-auto pb-20">
+        
+        <!-- HEADER SECTION -->
+        <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                <h2 class="text-4xl font-bold font-space tracking-tighter mb-2">Management Console</h2>
+                <p class="text-gray-500 text-sm">Deploy new experiences and monitor system records.</p>
+            </div>
+            
+            <div class="flex gap-4">
+                <div class="glass-card px-6 py-4 rounded-2xl border border-white/5 flex flex-col justify-center">
+                    <span class="text-[10px] text-gray-500 font-mono uppercase mb-1">Total Records</span>
+                    <span id="stat-count" class="text-2xl font-bold font-space">--</span>
+                </div>
+                <div class="glass-card px-6 py-4 rounded-2xl border border-white/5 flex flex-col justify-center">
+                    <span class="text-[10px] text-gray-500 font-mono uppercase mb-1">Server Status</span>
+                    <span class="text-xs font-bold text-green-500">OPTIMAL</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            <!-- LEFT: UPLOAD FORM (7 Columns) -->
+            <div class="lg:col-span-7">
+                <div class="glass-card p-8 rounded-[2.5rem] relative overflow-hidden group">
+                    <div class="shimmer-border"></div>
+                    
+                    <h3 class="text-xl font-bold mb-8 flex items-center gap-3">
+                        <i data-lucide="plus-circle" class="text-green-500"></i>
+                        New Deployment
+                    </h3>
+
+                    <form id="upload-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="input-group">
+                                <input type="text" id="title" placeholder=" " required class="peer">
+                                <label>Experience Titles (Comma Separated)</label>
+                                <i data-lucide="type" class="icon"></i>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="price" placeholder=" " required class="peer">
+                                <label>Prices (Comma Separated, e.g. 15, 0, 50)</label>
+                                <i data-lucide="dollar-sign" class="icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="input-group">
+                                <select id="category" class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-10 text-white focus:outline-none focus:border-green-500/50 appearance-none">
+                                    <option value="My Crew">My Crew</option>
+                                    <option value="Local Legends">Local Legends</option>
+                                    <option value="Hidden Escapes">Hidden Escapes</option>
+                                    <option value="Late Night Bites">Late Night Bites</option>
+                                </select>
+                                <label class="!top-[-0.6rem] !left-4 !text-xs !bg-black px-1 text-green-500">Category Node</label>
+                                <i data-lucide="layers" class="icon"></i>
+                            </div>
+                            <div class="input-group">
+                                <select id="section" class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-10 text-white focus:outline-none focus:border-green-500/50 appearance-none">
+                                    <option value="Fresh">Default (Fresh Drops)</option>
+                                    <option value="Promoted">Promoted Highlight</option>
+                                    <option value="Trending">Trending Tonight</option>
+                                    <option value="NearMe">Around Near Me</option>
+                                </select>
+                                <label class="!top-[-0.6rem] !left-4 !text-xs !bg-black px-1 text-yellow-500">Placement Section</label>
+                                <i data-lucide="layout-template" class="icon"></i>
+                            </div>
+                        </div>
+
+                        <!-- DROPZONE -->
+                        <div class="relative group">
+                            <div id="drop-zone" class="w-full h-96 border-2 border-dashed border-white/5 rounded-[1.5rem] flex flex-col items-center justify-center hover:border-green-500/30 hover:bg-green-500/5 transition-all cursor-pointer relative overflow-hidden">
+                                <div id="drop-content" class="text-center">
+                                    <i data-lucide="image" class="w-10 h-10 text-gray-600 mb-3 mx-auto"></i>
+                                    <p class="text-xs text-gray-500 font-medium">Drag visual asset or click to browse</p>
+                                    <p class="text-[10px] text-gray-700 mt-1 uppercase tracking-tighter">JPG, PNG, WEBP (Supports Bulk / Multiple)</p>
+                                </div>
+                                <input type="file" id="image-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" multiple>
+                                <img id="preview" class="absolute inset-0 w-full h-full object-cover hidden">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 mt-4 mb-2 bg-white/5 border border-white/10 p-4 rounded-xl">
+                            <input type="checkbox" id="group-gallery" class="w-5 h-5 accent-purple-500 cursor-pointer">
+                            <label for="group-gallery" class="text-sm font-bold text-gray-300 cursor-pointer">Bundle as Single Gallery Post (Carousel)</label>
+                        </div>
+
+                        <button type="submit" id="btn-submit" class="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-green-500 hover:text-black transition-all flex items-center justify-center gap-3 group/btn shadow-xl active:scale-95">
+                            <span id="btn-text">INITIALIZE DEPLOYMENT</span>
+                            <i data-lucide="zap" class="w-4 h-4 fill-current group-hover/btn:animate-pulse"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RIGHT: RECORD LIST (5 Columns) -->
+            <div class="lg:col-span-5 flex flex-col h-full">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex gap-4">
+                        <button id="tab-live" class="text-xs font-mono tracking-widest text-white border-b-2 border-green-500 pb-1 uppercase transition-all">Live Database</button>
+                        <button id="tab-pending" class="text-xs font-mono tracking-widest text-gray-500 hover:text-white uppercase transition-all relative">
+                            Pending Queue
+                            <span id="pending-badge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center hidden">0</span>
+                        </button>
+                    </div>
+                    <button id="refresh-list" class="text-gray-500 hover:text-white transition-colors">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div id="admin-item-list" class="space-y-4 max-h-[600px] overflow-y-auto no-scrollbar pr-2">
+                    <!-- SKELETON -->
+                    <div class="h-20 bg-white/5 rounded-2xl animate-pulse"></div>
+                    <div class="h-20 bg-white/5 rounded-2xl animate-pulse"></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 border-t border-white/10 bg-black/50 backdrop-blur-xl py-12 px-6 relative z-10">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-green-600 rounded flex items-center justify-center font-bold text-[10px]">V</div>
+                <span class="text-sm font-bold font-space tracking-tighter">Vibe.</span>
+            </div>
+            <p class="text-[10px] text-gray-500 font-mono uppercase tracking-widest">© 2026 Vibe System. All rights reserved.</p>
+            <div class="flex items-center gap-4">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, setDoc, doc, query, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBImD4KXKJSZ94QqIMjnu54NRHaQu7dvnY",
+            authDomain: "jsitest-d2e8e.firebaseapp.com",
+            projectId: "jsitest-d2e8e",
+            storageBucket: "jsitest-d2e8e.firebasestorage.app",
+            messagingSenderId: "879082552061",
+            appId: "1:879082552061:web:292f08bbdf316a2bed9c94"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        lucide.createIcons();
+
+        // ROUTE PROTECTION
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.role !== 'admin') {
+                        window.location.href = "home.html"; // Kicked out to public feed
+                    }
+                } else {
+                    window.location.href = "index.html"; 
+                }
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+             signOut(auth);
+             window.location.href = "index.html";
+        });
+
+        const imageInput = document.getElementById('image-input');
+        const preview = document.getElementById('preview');
+        const uploadForm = document.getElementById('upload-form');
+        const btnText = document.getElementById('btn-text');
+        const statCount = document.getElementById('stat-count');
+
+        // PREVIEW
+        imageInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            
+            // Generate visual matrix container if missing
+            let mpContainer = document.getElementById('multiple-preview-container');
+            if(!mpContainer) {
+                mpContainer = document.createElement('div');
+                mpContainer.id = "multiple-preview-container";
+                mpContainer.className = "absolute inset-0 w-full h-full hidden overflow-y-auto no-scrollbar bg-black/80 backdrop-blur-md p-4 grid grid-cols-3 md:grid-cols-4 gap-2 pointer-events-none z-10 content-start";
+                document.getElementById('drop-zone').appendChild(mpContainer);
+            }
+            
+            mpContainer.innerHTML = ""; // format matrix
+
+            if (files.length > 0) {
+                document.getElementById('drop-content').classList.add('opacity-0');
+                
+                if(files.length === 1) {
+                    mpContainer.classList.add('hidden');
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.src = e.target.result;
+                        preview.classList.remove('hidden');
+                    }
+                    reader.readAsDataURL(files[0]);
+                } else {
+                    preview.classList.add('hidden');
+                    mpContainer.classList.remove('hidden');
+                    
+                    // Render miniature previews for all selected images dynamically
+                    Array.from(files).forEach((file, index) => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const imgWrap = document.createElement('div');
+                            imgWrap.className = "relative aspect-square rounded-lg overflow-hidden border border-white/20 shadow-lg";
+                            imgWrap.innerHTML = `
+                                <img src="${ev.target.result}" class="w-full h-full object-cover">
+                                <div class="absolute bottom-1 right-1 bg-black/80 text-[8px] text-white font-mono px-1.5 py-0.5 rounded shadow">${index+1}</div>
+                            `;
+                            mpContainer.appendChild(imgWrap);
+                        }
+                        reader.readAsDataURL(file);
+                    });
+                }
+            }
+        });
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const files = imageInput.files;
+            if(files.length === 0) return alert("Visual asset(s) required.");
+
+            const total = files.length;
+            let successCount = 0;
+
+            const rawTitle = document.getElementById('title').value;
+            // Parse comma-separated names, trimming whitespace
+            const titleList = rawTitle.split(',').map(t => t.trim()).filter(t => t.length > 0);
+
+            const rawPrice = document.getElementById('price').value;
+            const priceList = rawPrice.split(',').map(p => p.trim()).filter(p => !isNaN(p) && p !== '');
+            
+            const targetCat = document.getElementById('category').value;
+            const targetSec = document.getElementById('section').value;
+            const isGallery = document.getElementById('group-gallery').checked;
+
+            try {
+                if (isGallery && total > 0) {
+                    // BUNDLE AS GALLERY: Upload all files, push into one array, make ONE post.
+                    let galleryUrls = [];
+                    for (let i = 0; i < total; i++) {
+                        const file = files[i];
+                        btnText.innerText = `BUNDLING ASSET ${i+1}/${total}...`;
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', 'quenhet');
+                        const uploadRes = await fetch('https://api.cloudinary.com/v1_1/dsh3vyii7/image/upload', {
+                            method: 'POST', body: formData
+                        });
+                        const uploadData = await uploadRes.json();
+                        if (uploadData.secure_url) galleryUrls.push(uploadData.secure_url);
+                    }
+                    
+                    if(galleryUrls.length > 0) {
+                        btnText.innerText = `SAVING GALLERY TO CORE...`;
+                        const finalTitle = titleList[0] || "Untitled Gallery";
+                        const finalPrice = priceList[0] || "0";
+                        await addDoc(collection(db, "experiences"), {
+                            title: finalTitle,
+                            price: parseInt(finalPrice, 10),
+                            category: targetCat,
+                            section: targetSec,
+                            imageUrl: galleryUrls[0], // Cover image for fallback
+                            imageUrls: galleryUrls,   // The actual massive array
+                            createdAt: new Date().toISOString(),
+                            isAdmin: true
+                        });
+                        successCount = total;
+                    }
+                } else {
+                    // BATCH UPLOAD: Each photo is an independent post
+                    for (let i = 0; i < total; i++) {
+                        const file = files[i];
+                        btnText.innerText = `UPLOADING ${i+1}/${total} TO CLOUDINARY...`;
+                        
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', 'quenhet'); // Remember to setup in Cloudinary Settings
+
+                        // POST directly to Cloudinary
+                        const uploadRes = await fetch('https://api.cloudinary.com/v1_1/dsh3vyii7/image/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!uploadRes.ok) {
+                            const errData = await uploadRes.json();
+                            throw new Error(errData.error?.message || "Cloudinary upload failed!");
+                        }
+
+                        const uploadData = await uploadRes.json();
+
+                        if (uploadData.secure_url) {
+                            btnText.innerText = `SAVING ${i+1}/${total} TO FIREBASE...`;
+                            
+                            // Grab the specific custom title or default to the last specified title
+                            const finalTitle = titleList[Math.min(i, titleList.length - 1)] || "Untitled Core Vibe";
+                            const finalPrice = priceList[Math.min(i, priceList.length - 1)] || "0";
+
+                            await addDoc(collection(db, "experiences"), {
+                                title: finalTitle,
+                                price: parseInt(finalPrice, 10),
+                                category: targetCat,
+                                section: targetSec,
+                                imageUrl: uploadData.secure_url,
+                                createdAt: new Date().toISOString(),
+                                isAdmin: true
+                            });
+                            successCount++;
+                        }
+                    }
+                }
+                
+                btnText.innerText = `DEPLOYED ${successCount} ASSETS!`;
+                setTimeout(() => location.reload(), 1500);
+
+            } catch (err) {
+                console.error("FULL ERROR:", err);
+                alert("UPLOAD FAILED OR INCOMPLETE!\n\nError: " + err.message);
+                btnText.innerText = "INITIALIZE DEPLOYMENT";
+            }
+        });
+
+        // LOAD ITEMS & TABS
+        let currentTab = 'live';
+
+        document.getElementById('tab-live').addEventListener('click', (e) => {
+            currentTab = 'live';
+            e.target.classList.add('text-white', 'border-b-2', 'border-green-500', 'pb-1');
+            e.target.classList.remove('text-gray-500');
+            document.getElementById('tab-pending').classList.add('text-gray-500');
+            document.getElementById('tab-pending').classList.remove('text-white', 'border-b-2', 'border-green-500', 'pb-1');
+            loadItems();
+        });
+
+        document.getElementById('tab-pending').addEventListener('click', (e) => {
+            currentTab = 'pending';
+            e.target.classList.add('text-white', 'border-b-2', 'border-green-500', 'pb-1');
+            e.target.classList.remove('text-gray-500');
+            document.getElementById('tab-live').classList.add('text-gray-500');
+            document.getElementById('tab-live').classList.remove('text-white', 'border-b-2', 'border-green-500', 'pb-1');
+            loadItems();
+        });
+
+        async function loadItems() {
+            const list = document.getElementById('admin-item-list');
+            const collectionName = currentTab === 'live' ? "experiences" : "pending_experiences";
+            const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
+            const snap = await getDocs(q);
+            
+            list.innerHTML = "";
+            
+            if(currentTab === 'live') {
+                statCount.innerText = snap.size;
+            } else {
+                const badge = document.getElementById('pending-badge');
+                if(snap.size > 0) {
+                     badge.innerText = snap.size;
+                     badge.classList.remove('hidden');
+                } else {
+                     badge.classList.add('hidden');
+                }
+            }
+
+            if(snap.empty) {
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-10 uppercase tracking-widest">No records found.</p>`;
+                return;
+            }
+
+            snap.forEach(item => {
+                const data = item.data();
+                const div = document.createElement('div');
+                div.className = "group flex items-center justify-between p-4 glass-card rounded-2xl border border-white/5 hover:border-white/20 transition-all";
+                
+                let actionsHTML = "";
+                if(currentTab === 'live') {
+                    actionsHTML = `
+                        <button class="delete-btn text-gray-600 hover:text-red-500 p-2 transition-colors" data-id="${item.id}" data-col="${collectionName}">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>`;
+                } else {
+                    actionsHTML = `
+                        <div class="flex gap-2">
+                            <button class="approve-btn text-gray-600 hover:text-green-500 p-2 transition-colors" data-id="${item.id}">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            </button>
+                            <button class="delete-btn text-gray-600 hover:text-red-500 p-2 transition-colors" data-id="${item.id}" data-col="${collectionName}">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </div>`;
+                }
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl overflow-hidden border border-white/10">
+                            <img src="${data.imageUrl}" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold flex items-center gap-2">
+                                ${data.title}
+                                ${data.isAdmin ? '<i data-lucide="shield-check" class="w-3 h-3 text-green-500"></i>' : ''}
+                            </h4>
+                            <p class="text-[10px] font-mono text-gray-500 uppercase tracking-tighter">${data.category} • $${data.price}</p>
+                        </div>
+                    </div>
+                    ${actionsHTML}
+                `;
+                list.appendChild(div);
+                
+                if(currentTab === 'pending') {
+                    div.querySelector('.approve-btn').addEventListener('click', async () => {
+                        if(confirm("Approve and Deploy to Live Feed?")) {
+                            await setDoc(doc(db, "experiences", item.id), data);
+                            await deleteDoc(doc(db, "pending_experiences", item.id));
+                            loadItems();
+                        }
+                    });
+                }
+            });
+            lucide.createIcons();
+
+            // Handle Deletion
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if(confirm("Confirm deletion of record?")) {
+                        await deleteDoc(doc(db, btn.dataset.col, btn.dataset.id));
+                        loadItems();
+                    }
+                });
+            });
+        }
+
+        loadItems();
+        document.getElementById('refresh-list').addEventListener('click', loadItems);
+    </script>
+</body>
+</html>
