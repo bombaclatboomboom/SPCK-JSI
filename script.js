@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -13,7 +13,7 @@ const firebaseConfig = {
     measurementId: "G-7PN0QFR1SV"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
@@ -34,8 +34,86 @@ const els = {
     statusText: document.getElementById("status-text"),
     btnSubmit: document.getElementById("btn-submit"),
     btnText: document.getElementById("btn-text"),
-    authForm: document.getElementById("auth-form")
+    authForm: document.getElementById("auth-form"),
+    langToggle: document.getElementById("lang-toggle"),
+    langText: document.getElementById("lang-text")
 };
+
+// --- i18n ---
+const translations = {
+    en: {
+        portal_title: "VIBE.",
+        system_status: "System Online",
+        card_header: "Vibe.",
+        unlock_status: "HOLD TO UNLOCK SYSTEM",
+        field_username: "Username",
+        field_email: "Email Address",
+        field_password: "Password",
+        field_admin_placeholder: "ENTER ROOT KEY...",
+        btn_connect: "Connect",
+        btn_verifying: "Verifying...",
+        btn_create_account: "Create Account",
+        btn_google: "Sign in with Google",
+        toggle_text_login: "First time?",
+        toggle_text_signup: "Already have an ID?",
+        btn_toggle_signup: "Create ID",
+        btn_toggle_signin: "Sign In",
+        outro_guest: "Welcome.",
+        outro_admin_title: "ACCESS GRANTED",
+        outro_admin_text: "SYSTEM OVERRIDE",
+        footer_copyright: "© 2026 Vibe Ecosystem. All rights reserved.",
+        unlock_success: "SYSTEM UNLOCKED"
+    },
+    vi: {
+        portal_title: "VIBE.",
+        system_status: "Hệ thống Trực tuyến",
+        card_header: "Vibe.",
+        unlock_status: "NHẤN GIỮ ĐỂ MỞ KHÓA",
+        field_username: "Tên người dùng",
+        field_email: "Địa chỉ Email",
+        field_password: "Mật khẩu",
+        field_admin_placeholder: "NHẬP KHÓA ROOT...",
+        btn_connect: "Kết nối",
+        btn_verifying: "Đang xác thực...",
+        btn_create_account: "Tạo tài khoản",
+        btn_google: "Đăng nhập với Google",
+        toggle_text_login: "Lần đầu truy cập?",
+        toggle_text_signup: "Đã có tài khoản?",
+        btn_toggle_signup: "Tạo ID",
+        btn_toggle_signin: "Đăng nhập",
+        outro_guest: "Chào mừng.",
+        outro_admin_title: "TRUY CẬP ĐƯỢC CHẤP NHẬN",
+        outro_admin_text: "GHI ĐÈ HỆ THỐNG",
+        footer_copyright: "© 2026 Vibe Ecosystem. Bảo lưu mọi quyền.",
+        unlock_success: "HỆ THỐNG ĐÃ MỞ"
+    }
+};
+
+let currentLang = localStorage.getItem('vibe_lang') || 'en';
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('vibe_lang', lang);
+    els.langText.innerText = lang.toUpperCase();
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const text = translations[lang][key];
+        if (text) {
+            if (el.tagName === 'INPUT' && (el.hasAttribute('placeholder') || el.hasAttribute('data-i18n'))) {
+                el.placeholder = text;
+            } else if (el.hasAttribute('data-text')) {
+                el.setAttribute('data-text', text);
+                el.innerText = text;
+            } else if (el.hasAttribute('data-value')) {
+                el.setAttribute('data-value', text);
+                // If intro is still running, it will catch the change on next iteration
+            } else {
+                el.innerText = text;
+            }
+        }
+    });
+}
 
 // --- VARIABLES ---
 let isLogin = true;
@@ -80,7 +158,16 @@ function runDecodeEffect() {
     }, 30);
 }
 
-window.onload = runDecodeEffect;
+window.onload = () => {
+    setLanguage(currentLang);
+    runDecodeEffect();
+};
+
+if(els.langToggle) {
+    els.langToggle.addEventListener('click', () => {
+        setLanguage(currentLang === 'en' ? 'vi' : 'en');
+    });
+}
 
 // --- 2. LONG PRESS LOGIC (ADMIN) ---
 const startPress = (e) => {
@@ -90,7 +177,7 @@ const startPress = (e) => {
     pressTimer = setTimeout(() => {
         isAdminMode = true;
         els.progressRing.style.stroke = "#10b981";
-        els.statusText.innerText = "SYSTEM UNLOCKED";
+        els.statusText.innerText = translations[currentLang].unlock_success;
         els.statusText.classList.add("text-green-500");
         els.adminPanel.style.height = "60px";
         els.logoTrigger.classList.add("animate-pulse");
@@ -125,18 +212,18 @@ btnToggle.addEventListener("click", (e) => {
     
     if(!isLogin) {
         fieldName.classList.remove("hidden");
-        els.btnText.innerText = "Create Account";
-        document.getElementById("toggle-text").innerText = "Already have an ID?";
-        btnToggle.innerText = "Sign In";
-        els.statusText.innerText = "HOLD TO UNLOCK SYSTEM";
+        els.btnText.innerText = translations[currentLang].btn_create_account;
+        document.getElementById("toggle-text").innerText = translations[currentLang].toggle_text_signup;
+        btnToggle.innerText = translations[currentLang].btn_toggle_signin;
+        els.statusText.innerText = translations[currentLang].unlock_status;
     } else {
         fieldName.classList.add("hidden");
-        els.btnText.innerText = "Connect";
-        document.getElementById("toggle-text").innerText = "First time?";
-        btnToggle.innerText = "Create ID";
+        els.btnText.innerText = translations[currentLang].btn_connect;
+        document.getElementById("toggle-text").innerText = translations[currentLang].toggle_text_login;
+        btnToggle.innerText = translations[currentLang].btn_toggle_signup;
         els.adminPanel.style.height = "0";
         isAdminMode = false;
-        els.statusText.innerText = "";
+        els.statusText.innerText = translations[currentLang].unlock_status;
     }
 });
 
@@ -148,7 +235,7 @@ els.authForm.addEventListener("submit", async (e) => {
     const name = document.getElementById("input-name").value;
     const adminCode = document.getElementById("input-admin-code").value;
     
-    els.btnText.innerText = "Verifying...";
+    els.btnText.innerText = translations[currentLang].btn_verifying;
     
     try {
         let role = "guest";
@@ -185,7 +272,7 @@ els.authForm.addEventListener("submit", async (e) => {
 
     } catch (err) {
         alert(err.message);
-        els.btnText.innerText = isLogin ? "Connect" : "Create Account";
+        els.btnText.innerText = isLogin ? translations[currentLang].btn_connect : translations[currentLang].btn_create_account;
     }
 });
 

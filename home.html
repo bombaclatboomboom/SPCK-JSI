@@ -7,15 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/+esm"></script>
 </head>
-<body class="bg-black text-white min-h-screen">
+<body class="bg-black text-white min-h-screen page-enter">
 
-    <audio id="bg-music" loop pre-load="auto">
-    <source src="../assets/hk.mp3" type="audio/mpeg">
-    <source src="../assets/ana.mp3" type="audio/mpeg">
-    <source src="../assets/tnye.mp3" type="audio/mpeg">
-</audio>
+    
 
 
     <div class="aurora-bg"></div>
@@ -26,12 +23,26 @@
             <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">V</div>
             <h1 class="text-xl font-bold font-space tracking-tighter">Vibe.</h1>
         </div>
+        <!-- Navbar Music Player -->
+        <div class="relative group ml-4 z-[100]">
+            <button id="music-toggle" class="glass-card px-3 py-1.5 rounded-lg border border-white/10 text-[10px] font-bold tracking-widest uppercase flex items-center gap-2 hover:bg-white/5 transition-all">
+                <i data-lucide="music" class="w-3 h-3 text-purple-400"></i>
+                <span id="current-track-name" class="font-mono">Music: Off</span>
+            </button>
+            <div class="absolute top-full left-0 mt-2 w-48 glass-card border flex flex-col border-white/10 rounded-xl overflow-hidden hidden group-hover:flex">
+                <button class="track-btn px-4 py-2 text-[10px] uppercase font-bold text-left hover:bg-white/10 flex items-center gap-2" data-track="assets/hk.mp3" data-name="HK Vibes"><i data-lucide="play" class="w-3 h-3"></i> HK Vibes</button>
+                <button class="track-btn px-4 py-2 text-[10px] uppercase font-bold text-left hover:bg-white/10 flex items-center gap-2" data-track="assets/ana.mp3" data-name="ANA Beats"><i data-lucide="play" class="w-3 h-3"></i> ANA Beats</button>
+                <button class="track-btn px-4 py-2 text-[10px] uppercase font-bold text-left hover:bg-white/10 flex items-center gap-2" data-track="assets/tnye.mp3" data-name="TNYE Groove"><i data-lucide="play" class="w-3 h-3"></i> TNYE Groove</button>
+                <div class="border-t border-white/5 my-1"></div>
+                <button id="stop-music-btn" class="px-4 py-2 text-[10px] uppercase font-bold text-left hover:bg-red-500/20 text-red-500 flex items-center gap-2"><i data-lucide="square" class="w-3 h-3"></i> Stop Sequence</button>
+            </div>
+        </div>
         
         <div class="hidden md:flex items-center gap-8">
-            <a href="home.html" class="text-xs font-bold tracking-widest uppercase border-b-2 border-purple-500 pb-1">Explore</a>
-            <a href="chat.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5"><i data-lucide="bot" class="w-3 h-3 inline"></i> Oracle AI</a>
-            <a href="messages.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5"><i data-lucide="message-square" class="w-3 h-3 inline"></i> Network</a>
-            <a href="bookmarks.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors">Bookmarks</a>
+            <a href="home.html" class="text-xs font-bold tracking-widest uppercase border-b-2 border-purple-500 pb-1" data-i18n="nav_explore">Explore</a>
+            <a href="chat.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5" data-i18n="nav_oracle"><i data-lucide="bot" class="w-3 h-3 inline"></i> Oracle AI</a>
+            <a href="messages.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors flex items-center gap-1.5" data-i18n="nav_network"><i data-lucide="message-square" class="w-3 h-3 inline"></i> Network</a>
+            <a href="bookmarks.html" class="text-xs font-bold tracking-widest uppercase text-gray-500 hover:text-white transition-colors" data-i18n="nav_bookmarks">Bookmarks</a>
             <div class="relative group mt-1">
                 <button id="btn-notifications" class="text-gray-500 hover:text-white transition-colors flex items-center justify-center p-1" title="System Alerts">
                     <i data-lucide="bell" class="w-4 h-4"></i>
@@ -52,11 +63,15 @@
                     </div>
                 </div>
             </div>
-            <button id="btn-checkin-desktop" class="bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-xl shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 hover:-translate-y-0.5 transition-all">Check-In</button>
+            <button id="btn-checkin-desktop" class="bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-xl shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 hover:-translate-y-0.5 transition-all" data-i18n="btn_checkin">Check-In</button>
         </div>
 
         <div class="flex items-center gap-4">
-            <button id="btn-admin" class="hidden text-[10px] border border-green-500/50 text-green-500 px-2 py-1 rounded font-mono">ADMIN</button>
+            <button id="lang-toggle" class="glass-card px-3 py-1.5 rounded-lg border border-white/10 text-[10px] font-bold tracking-widest uppercase flex items-center gap-2 hover:bg-white/5 transition-all active:scale-95">
+                <i data-lucide="languages" class="w-3 h-3"></i>
+                <span id="lang-text">EN</span>
+            </button>
+            <button id="btn-admin" class="hidden text-[10px] border border-green-500/50 text-green-500 px-2 py-1 rounded font-mono" data-i18n="nav_admin">ADMIN</button>
             <a href="profile.html" class="w-10 h-10 rounded-full bg-zinc-800 border border-white/10 overflow-hidden cursor-pointer block hover:ring-2 hover:ring-purple-500 transition-all">
                 <img id="user-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar">
             </a>
@@ -66,15 +81,15 @@
     <!-- HERO SECTION -->
     <section class="pt-32 pb-12 px-6 max-w-7xl mx-auto text-center">
         <h2 class="text-5xl md:text-7xl font-bold font-space tracking-tighter mb-6">
-            Find your next <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">story.</span>
+            <span data-i18n="home_hero_title">Find your next </span><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400" data-i18n="home_hero_story">story.</span>
         </h2>
 
         <!-- MOOD SEARCH -->
         <div class="max-w-2xl mx-auto mb-8 relative">
             <div class="search-container flex items-center p-2 rounded-2xl">
                 <i data-lucide="search" class="search-icon ml-4 w-5 h-5 text-gray-500 transition-colors"></i>
-                <input type="text" id="mood-search" placeholder="Search experiences, vibes, or 'late night food'..." class="bg-transparent w-full p-4 outline-none text-white placeholder-gray-600">
-                <button id="surprise-me" class="btn-surprise hidden md:flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs whitespace-nowrap">
+                <input type="text" id="mood-search" placeholder="Search experiences, vibes, or 'late night food'..." data-i18n="search_placeholder" class="bg-transparent w-full p-4 outline-none text-white placeholder-gray-600">
+                <button id="surprise-me" class="btn-surprise hidden md:flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs whitespace-nowrap" data-i18n="btn_surprise">
                     <i data-lucide="sparkles" class="w-4 h-4"></i>
                     SURPRISE ME
                 </button>
@@ -85,11 +100,11 @@
         <div class="stats-strip py-3 flex items-center justify-center gap-8 mb-12">
             <div class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-gray-500">
                 <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                <span id="live-users">12</span> EXPLORING NOW
+                <span id="live-users">12</span> <span data-i18n="stats_exploring">EXPLORING NOW</span>
             </div>
             <div class="w-[1px] h-3 bg-white/10"></div>
             <div class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                ⚡ <span id="new-count">3</span> ADDED TODAY
+                ⚡ <span id="new-count">3</span> <span data-i18n="stats_added">ADDED TODAY</span>
             </div>
         </div>
     </section>
@@ -102,22 +117,22 @@
             <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mr-2 flex items-center gap-2"><i data-lucide="activity" class="w-3 h-3 text-purple-500"></i> Vibe Sync</span>
             
             <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-white text-black text-xs font-bold whitespace-nowrap active overflow-hidden group shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all hover:scale-105" data-vibe="All">
-                <span class="relative z-10 w-full text-center">Vibe Check (All)</span>
+                <span class="relative z-10 w-full text-center" data-i18n="filter_all">Vibe Check (All)</span>
             </button>
             <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-black border border-white/10 text-white text-xs font-bold whitespace-nowrap overflow-hidden group hover:border-purple-500 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)]" data-vibe="My Crew">
-                <span class="relative z-10">My Crew 👯</span>
+                <span class="relative z-10" data-i18n="filter_crew">My Crew 👯</span>
                 <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </button>
             <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-black border border-white/10 text-white text-xs font-bold whitespace-nowrap overflow-hidden group hover:border-orange-500 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)]" data-vibe="Local Legends">
-                <span class="relative z-10">Local Legends 👑</span>
+                <span class="relative z-10" data-i18n="filter_legends">Local Legends 👑</span>
                 <div class="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-red-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </button>
             <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-black border border-white/10 text-white text-xs font-bold whitespace-nowrap overflow-hidden group hover:border-blue-500 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]" data-vibe="Late Night Bites">
-                <span class="relative z-10">Late Night Bites 🍜</span>
+                <span class="relative z-10" data-i18n="filter_latenight">Late Night Bites 🍜</span>
                 <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </button>
             <button class="vibe-filter relative px-6 py-3 rounded-2xl bg-black border border-white/10 text-white text-xs font-bold whitespace-nowrap overflow-hidden group hover:border-green-500 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)]" data-vibe="Hidden Escapes">
-                <span class="relative z-10">Hidden Escapes 🗺️</span>
+                <span class="relative z-10" data-i18n="filter_hidden">Hidden Escapes 🗺️</span>
                 <div class="absolute inset-0 bg-gradient-to-r from-green-600/20 to-emerald-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </button>
         </div>
@@ -126,25 +141,25 @@
         <div id="human-layout">
             <!-- PROMOTED HIGHLIGHTS -->
             <div id="promoted-container" class="mb-12 hidden">
-                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="megaphone" class="w-5 h-5 text-yellow-500"></i> Promoted Experiences</h3>
+                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="megaphone" class="w-5 h-5 text-yellow-500"></i> <span data-i18n="heading_promoted">Promoted Experiences</span></h3>
                 <div id="feed-promoted" class="flex overflow-x-auto gap-6 pb-4 no-scrollbar snap-x"></div>
             </div>
 
             <!-- TRENDING TONIGHT -->
             <div id="trending-container" class="mb-12 hidden">
-                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-purple-500"></i> Trending Tonight</h3>
+                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-purple-500"></i> <span data-i18n="heading_trending">Trending Tonight</span></h3>
                 <div id="feed-trending" class="flex overflow-x-auto gap-6 pb-4 no-scrollbar snap-x"></div>
             </div>
 
             <!-- AROUND NEAR ME -->
             <div id="near-container" class="mb-12 hidden">
-                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-5 h-5 text-blue-500"></i> Around Near Me</h3>
+                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-5 h-5 text-blue-500"></i> <span data-i18n="heading_near">Around Near Me</span></h3>
                 <div id="feed-near" class="flex overflow-x-auto gap-6 pb-4 no-scrollbar snap-x"></div>
             </div>
 
             <!-- NEW UPLOADS -->
             <div id="fresh-container" class="mb-8">
-                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-5 h-5 text-green-500"></i> Fresh Community Drops</h3>
+                <h3 class="text-xl font-bold font-space uppercase tracking-tighter mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-5 h-5 text-green-500"></i> <span data-i18n="heading_fresh">Fresh Community Drops</span></h3>
                 <div id="feed-fresh" class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
                     <!-- Skeleton Loaders -->
                     <div class="h-80 w-full rounded-3xl bg-white/5 animate-pulse break-inside-avoid"></div>
@@ -161,9 +176,9 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="flex items-center gap-2">
                 <div class="w-6 h-6 bg-purple-600 rounded flex items-center justify-center font-bold text-[10px]">V</div>
-                <span class="text-sm font-bold font-space tracking-tighter">Vibe.</span>
+                <span class="text-sm font-bold font-space tracking-tighter" data-i18n="card_header">Vibe.</span>
             </div>
-            <p class="text-[10px] text-gray-500 font-mono uppercase tracking-widest">© 2026 Vibe Ecosystem. All rights reserved.</p>
+            <p class="text-[10px] text-gray-500 font-mono uppercase tracking-widest" data-i18n="footer_copyright">© 2026 Vibe Ecosystem. All rights reserved.</p>
             <div class="flex items-center gap-4">
                 <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
                 <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
@@ -171,6 +186,37 @@
             </div>
         </div>
     </footer>
+
+    <!-- BACK TO TOP -->
+    <button id="btn-top" class="fixed bottom-24 md:bottom-8 right-6 z-40 w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur text-white flex items-center justify-center shadow-lg shadow-purple-600/30 opacity-0 translate-y-4 transition-all duration-300 pointer-events-none hover:bg-purple-500 active:scale-90" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i data-lucide="arrow-up" class="w-5 h-5"></i>
+    </button>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-nav fixed bottom-0 left-0 right-0 z-50 md:hidden border-t border-white/10 safe-area-bottom">
+        <div class="flex justify-around items-center py-3 px-2">
+            <a href="home.html" class="mobile-nav-item active flex flex-col items-center gap-0.5 p-1.5 rounded-xl">
+                <i data-lucide="compass" class="w-5 h-5"></i>
+                <span class="text-[8px] font-bold uppercase tracking-widest">Explore</span>
+            </a>
+            <a href="chat.html" class="mobile-nav-item flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-gray-500">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                <span class="text-[8px] font-bold uppercase tracking-widest">Oracle</span>
+            </a>
+            <a href="messages.html" class="mobile-nav-item flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-gray-500">
+                <i data-lucide="message-circle" class="w-5 h-5"></i>
+                <span class="text-[8px] font-bold uppercase tracking-widest">Network</span>
+            </a>
+            <a href="bookmarks.html" class="mobile-nav-item flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-gray-500">
+                <i data-lucide="bookmark" class="w-5 h-5"></i>
+                <span class="text-[8px] font-bold uppercase tracking-widest">Saved</span>
+            </a>
+            <a href="profile.html" class="mobile-nav-item flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-gray-500">
+                <i data-lucide="user" class="w-5 h-5"></i>
+                <span class="text-[8px] font-bold uppercase tracking-widest">Profile</span>
+            </a>
+        </div>
+    </nav>
 
     <!-- CHECK-IN MODAL -->
     <div id="checkin-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl hidden items-center justify-center p-4">
@@ -183,8 +229,21 @@
                 <div id="ci-drop-zone" class="w-full aspect-square md:aspect-[4/3] border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center hover:border-purple-500/50 hover:bg-purple-500/5 cursor-pointer relative overflow-hidden group transition-all">
                     <i data-lucide="camera" class="w-10 h-10 text-gray-500 mb-3 group-hover:scale-110 transition-transform"></i>
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Visual Asset (Required)</span>
-                    <input type="file" id="ci-image" accept="image/*,video/*" multiple required class="absolute inset-0 opacity-0 cursor-pointer">
-                    <img id="ci-preview" class="absolute inset-0 w-full h-full object-cover hidden">
+                    <input type="file" id="ci-image" accept="image/*,video/*" multiple class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                    <input type="file" id="ci-add-image" accept="image/*,video/*" multiple class="hidden">
+                    
+                    <!-- Interactive Gallery Overlay -->
+                    <div id="ci-gallery-overlay" class="absolute inset-0 w-full h-full bg-black z-20 flex hidden items-center justify-center group/overlay">
+                        <img id="ci-preview" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover/overlay:opacity-100 transition-opacity pointer-events-none"></div>
+                        <div id="ci-counter" class="absolute top-4 left-4 bg-black/60 text-white px-2 py-1 rounded text-xs font-mono backdrop-blur-md opacity-0 group-hover/overlay:opacity-100 transition-opacity">1/1</div>
+                        <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover/overlay:opacity-100 transition-opacity">
+                             <button type="button" id="ci-add-btn" class="bg-purple-600/80 hover:bg-purple-500 text-white p-2 rounded-full backdrop-blur-md transition-all active:scale-95 z-30" title="Add More"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                             <button type="button" id="ci-remove-btn" class="bg-red-600/80 hover:bg-red-500 text-white p-2 rounded-full backdrop-blur-md transition-all active:scale-95 z-30" title="Remove Image"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                        <button type="button" id="ci-prev-btn" class="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-white/20 text-white rounded-full transition-all z-30 hidden"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <button type="button" id="ci-next-btn" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-white/20 text-white rounded-full transition-all z-30 hidden"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                    </div>
                 </div>
                 
                 <input type="text" id="ci-title" placeholder="Where are you? (Keep it minimal)" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-purple-500/50 text-sm font-bold placeholder-gray-600 transition-colors">
@@ -284,6 +343,8 @@
                         
                         <!-- Author Modification Powers -->
                         <div id="dt-author-controls" class="ml-auto flex items-center gap-3 hidden">
+                            <input type="file" id="dt-edit-image-input" accept="image/*,video/*" multiple class="hidden">
+                            <button id="btn-edit-image" class="text-gray-500 hover:text-white transition-colors p-1 hidden" title="Change Image(s)"><i data-lucide="image" class="w-4 h-4"></i></button>
                             <button id="btn-edit-post" class="text-gray-500 hover:text-white transition-colors p-1" title="Edit Vibe"><i data-lucide="settings" class="w-4 h-4"></i></button>
                             <button id="btn-delete-post" class="text-gray-500 hover:text-red-500 transition-colors p-1" title="Delete Vibe"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
@@ -304,9 +365,11 @@
 
     <!-- FIREBASE & LOGIC -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, getDoc, doc, updateDoc, deleteDoc, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        import { translatePage, setLanguage, getCurrentLang } from './i18n.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyBImD4KXKJSZ94QqIMjnu54NRHaQu7dvnY",
@@ -317,11 +380,38 @@
             appId: "1:879082552061:web:292f08bbdf316a2bed9c94"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
         const db = getFirestore(app);
         const auth = getAuth(app);
         
+        // i18n init
+        translatePage();
+        const langToggle = document.getElementById('lang-toggle');
+        const langText = document.getElementById('lang-text');
+        if(langToggle && langText) {
+            langText.innerText = getCurrentLang().toUpperCase();
+            langToggle.addEventListener('click', () => {
+                const next = getCurrentLang() === 'en' ? 'vi' : 'en';
+                setLanguage(next);
+                langText.innerText = next.toUpperCase();
+            });
+        }
+
         lucide.createIcons();
+
+        // Back to top visibility
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('btn-top');
+            if (btn) {
+                if (window.scrollY > 600) {
+                    btn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    btn.classList.add('opacity-100');
+                } else {
+                    btn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    btn.classList.remove('opacity-100');
+                }
+            }
+        }, { passive: true });
 
         // References for new Layout Feeds
         const feedPromoted = document.getElementById('feed-promoted');
@@ -332,6 +422,15 @@
         let allExperiences = [];
         let currentUserData = null; // Stored global identity
         let currentUserId = null;
+        let configAllowImageEdits = false;
+        
+        onSnapshot(doc(db, "system_config", "permissions"), (snap) => {
+            if(snap.exists()) {
+                configAllowImageEdits = snap.data().allowImageEdits === true;
+            } else {
+                configAllowImageEdits = false;
+            }
+        });
 
         // TOAST ENGINE
         function showToast(title, msg) {
@@ -649,46 +748,117 @@
         if(btnCheckinDesktop) btnCheckinDesktop.addEventListener('click', openCheckInModal);
         if(btnCheckinMobile) btnCheckinMobile.addEventListener('click', openCheckInModal);
 
+        let selectedCheckinFiles = [];
+        let checkinGalleryIndex = 0;
+        const ciGalleryOverlay = document.getElementById('ci-gallery-overlay');
+        const ciCounter = document.getElementById('ci-counter');
+        const ciPrevBtn = document.getElementById('ci-prev-btn');
+        const ciNextBtn = document.getElementById('ci-next-btn');
+        const ciAddImage = document.getElementById('ci-add-image');
+        
+        function updateCheckinPreview() {
+            if (selectedCheckinFiles.length === 0) {
+                ciGalleryOverlay.classList.add('hidden');
+                ciImageInput.classList.remove('hidden');
+                return;
+            }
+            ciImageInput.classList.add('hidden');
+            ciGalleryOverlay.classList.remove('hidden');
+            
+            const file = selectedCheckinFiles[checkinGalleryIndex];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                ciPreview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            ciCounter.innerText = `${checkinGalleryIndex + 1}/${selectedCheckinFiles.length}`;
+            if (selectedCheckinFiles.length > 1) {
+                ciPrevBtn.classList.remove('hidden');
+                ciNextBtn.classList.remove('hidden');
+            } else {
+                ciPrevBtn.classList.add('hidden');
+                ciNextBtn.classList.add('hidden');
+            }
+        }
+
+        function resetCheckin() {
+            selectedCheckinFiles = [];
+            checkinGalleryIndex = 0;
+            checkinForm.reset();
+            updateCheckinPreview();
+            ciBtnText.innerText = "POST CHECK-IN";
+        }
+
         closeCheckin.addEventListener('click', () => {
              checkinModal.classList.add('hidden');
              checkinModal.classList.remove('flex');
+             resetCheckin();
         });
 
-        // Image Preview
-        ciImageInput.addEventListener('change', (e) => {
-            const files = e.target.files;
+        function handleFileSelection(files) {
             if (files && files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    ciPreview.src = e.target.result;
-                    ciPreview.classList.remove('hidden');
-                }
-                reader.readAsDataURL(files[0]); // preview first image
-                
-                // Show badge if multiple
-                const existingBadge = ciPreview.parentNode.querySelector('.gallery-badge');
-                if(existingBadge) existingBadge.remove();
-                if(files.length > 1) {
-                    const badge = document.createElement('div');
-                    badge.className = "gallery-badge absolute top-4 right-4 bg-purple-600 border border-purple-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg z-30 tracking-widest uppercase";
-                    badge.innerText = `+${files.length - 1} MORE`;
-                    ciPreview.parentNode.appendChild(badge);
-                }
+                selectedCheckinFiles = selectedCheckinFiles.concat(Array.from(files));
+                checkinGalleryIndex = selectedCheckinFiles.length - 1; // go to last added
+                updateCheckinPreview();
             }
+        }
+
+        ciImageInput.addEventListener('change', (e) => {
+            handleFileSelection(e.target.files);
+            e.target.value = ''; // Reset input to allow re-selection
+        });
+        
+        ciAddImage.addEventListener('change', (e) => {
+            handleFileSelection(e.target.files);
+            e.target.value = '';
+        });
+
+        document.getElementById('ci-add-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            ciAddImage.click();
+        });
+
+        document.getElementById('ci-remove-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (selectedCheckinFiles.length > 0) {
+                selectedCheckinFiles.splice(checkinGalleryIndex, 1);
+                if (checkinGalleryIndex >= selectedCheckinFiles.length) {
+                    checkinGalleryIndex = Math.max(0, selectedCheckinFiles.length - 1);
+                }
+                updateCheckinPreview();
+            }
+        });
+
+        ciPrevBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if(selectedCheckinFiles.length <= 1) return;
+            checkinGalleryIndex = (checkinGalleryIndex - 1 + selectedCheckinFiles.length) % selectedCheckinFiles.length;
+            updateCheckinPreview();
+        });
+
+        ciNextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if(selectedCheckinFiles.length <= 1) return;
+            checkinGalleryIndex = (checkinGalleryIndex + 1) % selectedCheckinFiles.length;
+            updateCheckinPreview();
         });
 
         // Upload Form Submit
         checkinForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const files = ciImageInput.files;
-            if(files.length === 0) return alert("A visual asset is required to Check-In.");
+            if(selectedCheckinFiles.length === 0) return alert("A visual asset is required to Check-In.");
 
-            const isGallery = files.length > 1;
-            ciBtnText.innerText = isGallery ? `UPLOADING ${files.length} ASSETS...` : "UPLOADING TO SATELLITE...";
+            const isGallery = selectedCheckinFiles.length > 1;
+            ciBtnText.innerText = isGallery ? `UPLOADING ${selectedCheckinFiles.length} ASSETS...` : "UPLOADING TO SATELLITE...";
             
             try {
                 // Parallel upload orchestration via Promise.all
-                const uploadPromises = Array.from(files).map(async (file) => {
+                const uploadPromises = selectedCheckinFiles.map(async (file) => {
                     const formData = new FormData();
                     formData.append('file', file);
                     formData.append('upload_preset', 'quenhet');
@@ -733,11 +903,8 @@
                 ciBtnText.innerText = "PIN DROPPED!";
                 setTimeout(() => {
                     checkinModal.classList.add('hidden');
-                    checkinForm.reset();
-                    ciPreview.classList.add('hidden');
-                    const existingBadge = ciPreview.parentNode.querySelector('.gallery-badge');
-                    if(existingBadge) existingBadge.remove();
-                    ciBtnText.innerText = "POST CHECK-IN";
+                    checkinModal.classList.remove('flex');
+                    resetCheckin();
                     fetchData(); // Reload Feed
                 }, 1000);
 
@@ -944,11 +1111,80 @@
                 // Unbind previous duplicate listeners to cleanly add new ones
                 const btnEdit = document.getElementById('btn-edit-post');
                 const btnDelete = document.getElementById('btn-delete-post');
+                const btnEditImg = document.getElementById('btn-edit-image');
+                const editImgInput = document.getElementById('dt-edit-image-input');
+                
                 const newBtnEdit = btnEdit.cloneNode(true);
                 const newBtnDelete = btnDelete.cloneNode(true);
+                const newBtnEditImg = btnEditImg.cloneNode(true);
+                const newEditImgInput = editImgInput.cloneNode(true);
+                
                 btnEdit.parentNode.replaceChild(newBtnEdit, btnEdit);
                 btnDelete.parentNode.replaceChild(newBtnDelete, btnDelete);
+                btnEditImg.parentNode.replaceChild(newBtnEditImg, btnEditImg);
+                editImgInput.parentNode.replaceChild(newEditImgInput, editImgInput);
                 
+                if (configAllowImageEdits) {
+                    newBtnEditImg.classList.remove('hidden');
+                } else {
+                    newBtnEditImg.classList.add('hidden');
+                }
+
+                newBtnEditImg.addEventListener('click', () => {
+                    newEditImgInput.click();
+                });
+
+                newEditImgInput.addEventListener('change', async (e) => {
+                    const files = e.target.files;
+                    if(files.length === 0) return;
+                    
+                    try {
+                        showToast("System Processing", "Uploading new visual assets...");
+                        const uploadPromises = Array.from(files).map(async (file) => {
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('upload_preset', 'quenhet');
+                            const uploadRes = await fetch('https://api.cloudinary.com/v1_1/dsh3vyii7/image/upload', {
+                                method: 'POST', body: formData
+                            });
+                            if (!uploadRes.ok) throw new Error("Cloudinary upload failed!");
+                            const uploadData = await uploadRes.json();
+                            return uploadData.secure_url;
+                        });
+                        const uploadedUrls = await Promise.all(uploadPromises);
+                        
+                        await updateDoc(doc(db, "experiences", currentExpId), { 
+                            imageUrl: uploadedUrls[0],
+                            imageUrls: uploadedUrls.length > 1 ? uploadedUrls : []
+                        });
+                        
+                        exp.imageUrl = uploadedUrls[0];
+                        exp.imageUrls = uploadedUrls.length > 1 ? uploadedUrls : [];
+                        activeGallery = uploadedUrls.length > 1 ? uploadedUrls : [uploadedUrls[0]];
+                        galleryIndex = 0;
+                        
+                        if (activeGallery.length > 1) {
+                            dtPrev.style.display = 'block';
+                            dtNext.style.display = 'block';
+                            countBadge.style.display = 'block';
+                            dtDotsContainer.classList.remove('hidden');
+                        } else {
+                            dtPrev.style.display = 'none';
+                            dtNext.style.display = 'none';
+                            countBadge.style.display = 'none';
+                            dtDotsContainer.classList.add('hidden');
+                        }
+
+                        updateGalleryView();
+                        
+                        showToast("System Updated", "Visuals successfully recalibrated.");
+                        fetchData();
+                    } catch(err) {
+                        console.error(err);
+                        alert("Image Upload Failed");
+                    }
+                });
+
                 newBtnEdit.addEventListener('click', async () => {
                     const newTitle = prompt("Recalibrate Vibe Title:", exp.title);
                     if(newTitle && newTitle.trim().length > 0) {
@@ -1134,18 +1370,25 @@
             }
         });
 
-        // 4. MOOD SEARCH LOGIC
-        moodSearch.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.experience-card'); // Fixed for multi-container
+        // 4. MOOD SEARCH LOGIC (Debounced for higher performance/FPS)
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        const filterVibes = debounce((term) => {
+            const cards = document.querySelectorAll('.experience-card');
             cards.forEach(card => {
                 const text = card.innerText.toLowerCase();
-                if(text.includes(term)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                card.style.display = text.includes(term) ? 'block' : 'none';
             });
+        }, 150);
+
+        moodSearch.addEventListener('input', (e) => {
+            filterVibes(e.target.value.toLowerCase());
         });
 
         // ACTION BUTTONS (Reply & Share)
@@ -1216,6 +1459,6 @@
         }
 
     </script>
-    <script type="module" src="../js/audio.js"></script>
+    <script type="module" src="audio.js"></script>
 </body>
 </html>

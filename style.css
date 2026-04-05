@@ -1,0 +1,398 @@
+/* ============================================
+   VIBE DESIGN SYSTEM — Consolidated Stylesheet
+   ============================================ */
+
+/* --- CSS VARIABLES --- */
+:root {
+    --bg: #050505;
+    --card: #0f0f0f;
+    --accent: #8b5cf6;
+    --accent-glow: rgba(139, 92, 246, 0.4);
+    --text-main: #ffffff;
+    --text-muted: #a1a1aa;
+    --glass: rgba(255, 255, 255, 0.03);
+    --red-urgency: #ef4444;
+}
+
+/* --- RESET & BASE --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+.font-space { font-family: 'Space Grotesk', sans-serif; }
+
+
+/* ========================
+   1. CINEMATIC BACKGROUNDS
+   ======================== */
+
+.aurora-bg {
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+    z-index: -1;
+    animation: aurora-float 15s infinite alternate ease-in-out;
+}
+
+@keyframes aurora-float {
+    0% { transform: scale(1) translateZ(0); }
+    100% { transform: scale(1.1) translate(10px, -10px) translateZ(0); }
+}
+
+/* Portal-specific animated overlay */
+.aurora-overlay {
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+    filter: blur(60px);
+    z-index: 2;
+    animation: aurora-move 10s infinite alternate ease-in-out;
+}
+
+@keyframes aurora-move {
+    0% { transform: scale(1) translateZ(0); }
+    100% { transform: scale(1.1) translate(20px, -20px) translateZ(0); }
+}
+
+
+/* ========================
+   2. FLOATING PARTICLES
+   ======================== */
+
+.particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.particle {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.2;
+    animation: float-up linear infinite;
+}
+.p1 { width: 2px; height: 2px; left: 10%; top: 100%; animation-duration: 7s; }
+.p2 { width: 3px; height: 3px; left: 30%; top: 100%; animation-duration: 10s; animation-delay: 1s; }
+.p3 { width: 1px; height: 1px; left: 70%; top: 100%; animation-duration: 5s; animation-delay: 2s; }
+.p4 { width: 2px; height: 2px; left: 90%; top: 100%; animation-duration: 8s; animation-delay: 0.5s; }
+
+@keyframes float-up {
+    0% { transform: translateY(0); opacity: 0; }
+    50% { opacity: 0.3; }
+    100% { transform: translateY(-100vh); opacity: 0; }
+}
+
+
+/* ========================
+   3. GLASS ELEMENTS
+   ======================== */
+
+.glass-nav {
+    background: rgba(5, 5, 5, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+    background: rgba(15, 15, 15, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+
+/* ========================
+   4. INPUTS & FORMS
+   ======================== */
+
+.input-group { position: relative; width: 100%; }
+.input-group input, .input-group select {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.75rem;
+    padding: 1rem 1rem 1rem 3rem;
+    color: white;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.input-group input:focus {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(255,255,255,0.05);
+}
+
+.input-group .icon {
+    position: absolute;
+    left: 1rem; top: 1.1rem;
+    width: 1.2rem; height: 1.2rem;
+    color: var(--text-muted);
+    transition: 0.3s;
+}
+
+.input-group input:focus ~ .icon { color: white; }
+
+.input-group label {
+    position: absolute;
+    left: 3rem; top: 1.1rem;
+    color: var(--text-muted);
+    transition: 0.3s;
+    pointer-events: none;
+    font-size: 0.875rem;
+}
+
+.input-group input:focus ~ label,
+.input-group input:not(:placeholder-shown) ~ label {
+    top: -0.6rem; left: 1rem; font-size: 0.7rem; color: var(--accent);
+    background: #000; padding: 0 4px;
+}
+
+
+/* ========================
+   5. SHIMMER BORDER (Portal Auth Card)
+   ======================== */
+
+.shimmer-border {
+    position: absolute;
+    inset: 0;
+    border-radius: 2rem;
+    padding: 1px;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    background-size: 200% 200%;
+    animation: shimmer-border 3s infinite linear;
+}
+
+@keyframes shimmer-border {
+    0% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+
+/* ========================
+   6. GLITCH TEXT (Admin Outro)
+   ======================== */
+
+.glitch-text {
+    position: relative;
+    animation: glitch 1s infinite;
+}
+.glitch-text::before, .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0; width: 100%;
+    background: black;
+}
+.glitch-text::before { left: 2px; text-shadow: -1px 0 red; clip-path: inset(0 0 0 0); animation: glitch-clip 2s infinite linear alternate-reverse; }
+.glitch-text::after { left: -2px; text-shadow: -1px 0 blue; clip-path: inset(0 0 0 0); animation: glitch-clip 2s infinite linear alternate-reverse; }
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+@keyframes glitch-clip {
+    0% { clip-path: inset(10% 0 80% 0); }
+    20% { clip-path: inset(80% 0 10% 0); }
+    40% { clip-path: inset(40% 0 50% 0); }
+    60% { clip-path: inset(10% 0 60% 0); }
+    80% { clip-path: inset(70% 0 20% 0); }
+    100% { clip-path: inset(30% 0 10% 0); }
+}
+
+
+/* ========================
+   7. SEARCH BAR
+   ======================== */
+
+.search-container {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.search-input:focus ~ .search-icon {
+    color: var(--accent);
+}
+
+
+/* ========================
+   8. SURPRISE ME BUTTON
+   ======================== */
+
+.btn-surprise {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, #1e1b4b, #312e81);
+}
+
+.btn-surprise::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmer-slide 4s infinite;
+}
+
+@keyframes shimmer-slide {
+    0% { transform: translateX(-150%) rotate(45deg); }
+    100% { transform: translateX(150%) rotate(45deg); }
+}
+
+
+/* ========================
+   9. STATS STRIP
+   ======================== */
+
+.stats-strip {
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.05), transparent);
+    border-top: 1px solid rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+
+/* ========================
+   10. NEWS TICKER
+   ======================== */
+
+.ticker-wrap {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(139, 92, 246, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    height: 30px;
+    display: flex;
+    align-items: center;
+}
+.ticker-move {
+    display: inline-block;
+    white-space: nowrap;
+    animation: ticker 40s linear infinite;
+}
+@keyframes ticker {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+
+/* ========================
+   11. EXPERIENCE CARDS
+   ======================== */
+
+.experience-card {
+    background: var(--card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1.5rem;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.experience-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 20px var(--accent-glow);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.experience-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.experience-card:hover::after {
+    opacity: 1;
+}
+
+.story-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    padding-bottom: 6rem;
+    z-index: 10;
+}
+
+.experience-card:hover .story-overlay { opacity: 1; }
+
+.countdown-badge {
+    background: var(--red-urgency);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(0.95); }
+}
+
+
+/* ========================
+   12. MOBILE BOTTOM NAV
+   ======================== */
+
+.mobile-nav {
+    background: rgba(5, 5, 5, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.mobile-nav-item {
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-item.active {
+    color: var(--accent) !important;
+}
+
+
+/* ========================
+   13. PAGE TRANSITIONS
+   ======================== */
+
+.page-enter {
+    animation: page-fade-in 0.35s ease-out;
+}
+
+@keyframes page-fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ========================
+   14. UTILITIES
+   ======================== */
+
+/* Hide scrollbar — all browsers */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
