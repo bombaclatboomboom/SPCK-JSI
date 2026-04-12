@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vibe | Hand-picked Experiences</title>
@@ -8,9 +11,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="style.css">
+    <!-- Leaflet.js for GPS Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/+esm"></script>
 </head>
 <body class="bg-black text-white min-h-screen page-enter">
+    <audio id="bg-music" data-turbo-permanent="true" loop pre-load="auto">
+    <source src="assets/hk.mp3" type="audio/mpeg">
+    <source src="assets/ana.mp3" type="audio/mpeg">
+    <source src="assets/tnye.mp3" type="audio/mpeg">
+</audio>
 
     
 
@@ -107,10 +118,34 @@
                 ⚡ <span id="new-count">3</span> <span data-i18n="stats_added">ADDED TODAY</span>
             </div>
         </div>
+
+        <!-- VIEW TOGGLE: Grid vs Map -->
+        <div class="flex items-center justify-center gap-2 mb-8">
+            <div class="glass-card inline-flex p-1 rounded-xl border border-white/10">
+                <button id="btn-grid-view" class="view-toggle px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-widest bg-white text-black transition-all flex items-center gap-2">
+                    <i data-lucide="layout-grid" class="w-3 h-3"></i> Grid
+                </button>
+                <button id="btn-map-view" class="view-toggle px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2">
+                    <i data-lucide="map" class="w-3 h-3"></i> Live Map
+                </button>
+            </div>
+        </div>
     </section>
 
+    <!-- GPS MAP CONTAINER (Phase 3) -->
+    <div id="map-section" class="hidden px-6 max-w-7xl mx-auto mb-12">
+        <div class="glass-card rounded-[2rem] border border-white/10 overflow-hidden relative" style="height: 65vh;">
+            <div class="absolute top-4 left-4 z-[1000] flex items-center gap-3">
+                <div class="glass-card px-4 py-2 rounded-full border border-white/10 text-xs font-mono uppercase tracking-widest bg-black/70 backdrop-blur-xl">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full inline-block mr-2 animate-pulse"></span>LIVE GPS · VIBE RADAR
+                </div>
+            </div>
+            <div id="map-container" class="w-full h-full"></div>
+        </div>
+    </div>
+
     <!-- EXPLORE BODY -->
-    <main class="px-6 max-w-7xl mx-auto pb-20">
+    <main id="grid-section" class="px-6 max-w-7xl mx-auto pb-20">
         
         <!-- VIBE FILTERS -->
         <div class="flex gap-4 mb-12 overflow-x-auto pb-6 no-scrollbar items-center">
@@ -235,6 +270,7 @@
                     <!-- Interactive Gallery Overlay -->
                     <div id="ci-gallery-overlay" class="absolute inset-0 w-full h-full bg-black z-20 flex hidden items-center justify-center group/overlay">
                         <img id="ci-preview" class="absolute inset-0 w-full h-full object-cover">
+                        <video id="ci-video-preview" class="absolute inset-0 w-full h-full object-cover hidden" autoplay muted loop playsinline></video>
                         <div class="absolute inset-0 bg-black/30 opacity-0 group-hover/overlay:opacity-100 transition-opacity pointer-events-none"></div>
                         <div id="ci-counter" class="absolute top-4 left-4 bg-black/60 text-white px-2 py-1 rounded text-xs font-mono backdrop-blur-md opacity-0 group-hover/overlay:opacity-100 transition-opacity">1/1</div>
                         <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover/overlay:opacity-100 transition-opacity">
@@ -257,7 +293,13 @@
                         <option value="Late Night Bites" class="bg-zinc-900">Late Night Bites</option>
                     </select>
                 </div>
-                
+
+                <!-- GPS Location Attach -->
+                <button type="button" id="ci-get-location" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed border-white/10 text-xs text-gray-500 hover:border-blue-500/50 hover:text-blue-400 transition-all">
+                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                    <span id="ci-location-text">Attach current GPS location</span>
+                </button>
+
                 <button type="submit" id="ci-submit" class="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-purple-500 hover:text-white transition-all flex justify-center gap-2 items-center active:scale-[0.98]">
                     <span id="ci-btn-text">POST CHECK-IN</span>
                 </button>
@@ -273,10 +315,33 @@
         <i data-lucide="plus" class="w-8 h-8"></i>
     </button>
 
-    <!-- THE GLASS DETAIL MODAL (CLEAN AESTHETIC) -->
+    <!-- THE GLASS DETAIL MODAL — CINEMATIC EDITION -->
     <div id="detail-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl hidden items-center justify-center p-0 md:p-6 transition-all">
+        
+        <!-- FLYING PARTICLES LAYER -->
+        <div id="modal-particles" class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            <div class="modal-particle" style="left:10%;top:20%;animation-delay:0s"></div>
+            <div class="modal-particle" style="left:25%;top:60%;animation-delay:0.5s"></div>
+            <div class="modal-particle" style="left:50%;top:30%;animation-delay:1s"></div>
+            <div class="modal-particle" style="left:70%;top:80%;animation-delay:1.5s"></div>
+            <div class="modal-particle" style="left:85%;top:15%;animation-delay:0.8s"></div>
+            <div class="modal-particle" style="left:40%;top:90%;animation-delay:2s"></div>
+            <div class="modal-particle lg" style="left:15%;top:70%;animation-delay:0.3s"></div>
+            <div class="modal-particle lg" style="left:60%;top:10%;animation-delay:1.2s"></div>
+            <div class="modal-particle sm" style="left:90%;top:50%;animation-delay:0.7s"></div>
+            <div class="modal-particle sm" style="left:5%;top:45%;animation-delay:1.8s"></div>
+        </div>
+
+        <!-- AURORA GRADIENT SWEEP -->
+        <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+            <div class="modal-aurora"></div>
+        </div>
+
         <!-- Ultra-clean glass window -->
-        <div class="w-full h-full md:h-[85vh] md:max-h-[900px] md:max-w-5xl md:rounded-[40px] border border-white/10 relative overflow-hidden flex flex-col md:flex-row shadow-2xl shadow-purple-900/20 bg-black/60 transition-all transform scale-95 opacity-0 duration-300" id="detail-card">
+        <div class="w-full h-full md:h-[85vh] md:max-h-[900px] md:max-w-5xl md:rounded-[40px] border border-white/10 relative overflow-hidden flex flex-col md:flex-row shadow-2xl shadow-purple-900/20 bg-black/60 transition-all transform scale-95 opacity-0 duration-500 z-10" id="detail-card">
+            
+            <!-- SHIMMER BORDER GLOW -->
+            <div class="modal-shimmer-border"></div>
             
             <!-- MOBILE: Floating Close Btn -->
             <button id="close-detail" class="absolute top-6 right-6 z-[110] text-white bg-black/40 backdrop-blur-lg p-3 rounded-full md:hidden hover:bg-black/60 transition-all border border-white/10"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -284,6 +349,12 @@
             <!-- LEFT: Core Visual Hero -->
             <div class="w-full md:w-[60%] h-[55vh] md:h-full relative bg-zinc-950 group flex-shrink-0">
                 <img id="dt-image" src="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500">
+                <video id="dt-video" class="absolute inset-0 w-full h-full object-cover hidden" autoplay muted loop playsinline></video>
+
+                <!-- Navigate Button -->
+                <button id="dt-navigate-btn" class="absolute bottom-6 left-6 z-30 flex items-center gap-2 bg-blue-600/90 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-full backdrop-blur-xl transition-all shadow-lg hidden">
+                    <i data-lucide="navigation" class="w-3 h-3"></i> Navigate Here
+                </button>
                 
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
 
@@ -323,9 +394,22 @@
                 <div class="flex-1 overflow-y-auto no-scrollbar p-4 md:px-8">
                     <!-- Text Content -->
                     <div class="mb-6 pb-6 border-b border-white/5">
-                        <span id="dt-category" class="text-[10px] font-bold text-purple-400 bg-purple-500/10 px-2 py-1 rounded-sm uppercase tracking-widest mb-3 inline-block">Category</span>
-                        <h2 id="dt-title" class="text-2xl md:text-3xl font-bold font-space leading-tight text-white mb-2">Title</h2>
+                        <span id="dt-category" class="text-[10px] font-bold text-purple-400 bg-purple-500/10 px-2 py-1 rounded-sm uppercase tracking-widest mb-3 inline-block modal-category-glow">Category</span>
+                        <h2 id="dt-title" class="text-2xl md:text-3xl font-bold font-space leading-tight text-white mb-2 modal-title-reveal">Title</h2>
                         <p id="dt-tags" class="text-xs font-mono text-blue-400 opacity-80 mt-2">#vibes</p>
+                    </div>
+
+                    <!-- MINI MAP PREVIEW -->
+                    <div id="dt-minimap-wrapper" class="hidden mb-6 pb-6 border-b border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
+                                <i data-lucide="map-pin" class="w-3 h-3 text-blue-400"></i> Location
+                            </span>
+                            <button id="dt-show-on-map" class="text-[10px] font-bold text-blue-400 hover:text-blue-300 uppercase tracking-widest flex items-center gap-1 transition-colors">
+                                <i data-lucide="external-link" class="w-3 h-3"></i> Show on Map
+                            </button>
+                        </div>
+                        <div id="dt-minimap" class="w-full h-32 rounded-xl overflow-hidden border border-white/10" style="z-index:1"></div>
                     </div>
 
                     <!-- Clean Vibe Checks -->
@@ -564,9 +648,19 @@
             }
         }
 
+        // Video URL detector
+        function isVideoUrl(url) {
+            if (!url) return false;
+            return url.match(/\.(mp4|webm|mov|ogg)/) || url.includes('/video/upload');
+        }
+
         function buildCardElement(exp, isPromotedOverride = false, renderingType = 'masonry') {
             const isTonight = exp.category === "My Crew" || Math.random() > 0.8;
             const isPromoted = isPromotedOverride || exp.isPromoted; 
+            const isVideo = isVideoUrl(exp.imageUrl);
+            const mediaHTML = isVideo
+                ? `<video src="${exp.imageUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" autoplay muted loop playsinline></video><div class="absolute top-4 right-14 z-20 bg-black/70 backdrop-blur-md px-2 py-1 rounded border border-white/20 text-white flex items-center gap-1"><i data-lucide="video" class="w-3 h-3"></i></div>`
+                : `<img src="${exp.imageUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter group-hover:saturate-150">`;
             const promotedHTML = isPromoted ? `<div class="absolute top-4 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded shadow-[0_0_15px_rgba(234,179,8,0.5)] z-20 border border-yellow-300/50 flex items-center gap-1"><i data-lucide="megaphone" class="w-3 h-3"></i> Promoted</div>` : '';
             
             // Detect Gallery Support
@@ -590,7 +684,7 @@
                         ${countdownHTML}
                         ${galleryIconHTML}
                         ${promotedHTML}
-                        <img src="${exp.imageUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter group-hover:saturate-150">
+                        ${mediaHTML}
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex items-end opacity-90 transition-opacity">
                             <div class="p-6 w-full">
                                 <span class="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em] mb-2 block">${exp.category}</span>
@@ -626,7 +720,7 @@
                         ${countdownHTML}
                         ${galleryIconHTML}
                         ${promotedHTML}
-                        <img src="${exp.imageUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter group-hover:saturate-150">
+                        ${mediaHTML}
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
                         <div class="absolute bottom-6 left-6 right-6 z-20">
                             <span class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em] mb-1 block">${exp.category}</span>
@@ -654,6 +748,24 @@
                     </div>
                 `;
             }
+            // Phase 5: Add 3D tilt effect
+            card.classList.add('tilt-3d');
+            const glowDiv = document.createElement('div');
+            glowDiv.className = 'tilt-glow';
+            card.querySelector('div')?.appendChild(glowDiv);
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                const tiltX = (y - 0.5) * 10;
+                const tiltY = (x - 0.5) * -10;
+                card.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
+                card.style.setProperty('--mouse-x', (x * 100) + '%');
+                card.style.setProperty('--mouse-y', (y * 100) + '%');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)';
+            });
             card.addEventListener('click', () => openDetailModal(exp));
             return card;
         }
@@ -766,9 +878,18 @@
             ciGalleryOverlay.classList.remove('hidden');
             
             const file = selectedCheckinFiles[checkinGalleryIndex];
+            const ciVideoPreview = document.getElementById('ci-video-preview');
             const reader = new FileReader();
-            reader.onload = (e) => {
-                ciPreview.src = e.target.result;
+            reader.onload = (ev) => {
+                if (file.type.startsWith('video/')) {
+                    ciPreview.classList.add('hidden');
+                    ciVideoPreview.classList.remove('hidden');
+                    ciVideoPreview.src = ev.target.result;
+                } else {
+                    ciVideoPreview.classList.add('hidden');
+                    ciPreview.classList.remove('hidden');
+                    ciPreview.src = ev.target.result;
+                }
             };
             reader.readAsDataURL(file);
             
@@ -863,7 +984,11 @@
                     formData.append('file', file);
                     formData.append('upload_preset', 'quenhet');
                     
-                    const uploadRes = await fetch('https://api.cloudinary.com/v1_1/dsh3vyii7/image/upload', {
+                    // Use video endpoint for video files
+                    const uploadEndpoint = file.type.startsWith('video/')
+                        ? 'https://api.cloudinary.com/v1_1/dsh3vyii7/video/upload'
+                        : 'https://api.cloudinary.com/v1_1/dsh3vyii7/image/upload';
+                    const uploadRes = await fetch(uploadEndpoint, {
                         method: 'POST',
                         body: formData
                     });
@@ -894,7 +1019,9 @@
                     tags: document.getElementById('ci-tags').value,
                     imageUrl: uploadedUrls[0], // primary
                     galleryUrls: isGallery ? uploadedUrls : [],
-                    price: 0, // Default for free user checkins
+                    price: 0,
+                    lat: window._ciLat || null,
+                    lng: window._ciLng || null,
                     createdAt: new Date().toISOString(),
                     isAdmin: false,
                     ...identityPayload
@@ -928,8 +1055,24 @@
         let activeGallery = [];
         let galleryIndex = 0;
 
+        const dtVideo = document.getElementById('dt-video');
+
         function updateGalleryView() {
-            dtImage.src = activeGallery[galleryIndex];
+            const url = activeGallery[galleryIndex];
+            // Handle video vs image in detail modal
+            if (isVideoUrl(url)) {
+                dtImage.classList.add('hidden');
+                dtVideo.classList.remove('hidden');
+                dtVideo.src = url;
+                dtVideo.play().catch(() => {});
+            } else {
+                dtVideo.classList.add('hidden');
+                dtVideo.pause();
+                dtVideo.src = '';
+                dtImage.classList.remove('hidden');
+                dtImage.src = url;
+            }
+
             if(activeGallery.length > 1) {
                 countBadge.innerText = `${galleryIndex + 1} / ${activeGallery.length}`;
             }
@@ -1033,14 +1176,23 @@
             }
         });
 
-        // Animate out function
+        // Animate out with cinematic warp
         function closeDetail() {
-            detailCard.classList.remove('scale-100', 'opacity-100');
-            detailCard.classList.add('scale-95', 'opacity-0');
+            const dtV = document.getElementById('dt-video');
+            if (dtV) { dtV.pause(); dtV.src = ''; }
+            detailCard.classList.remove('modal-warp-in');
+            detailCard.classList.add('modal-warp-out');
             setTimeout(() => {
                 detailModal.classList.add('hidden');
-                detailModal.classList.remove('flex');
-            }, 300);
+                detailModal.classList.remove('flex', 'modal-backdrop-in');
+                detailCard.classList.remove('modal-warp-out', 'scale-100', 'opacity-100');
+                detailCard.classList.add('scale-95', 'opacity-0');
+                // Destroy mini-map to prevent Leaflet container errors
+                if (window._dtMiniMap) {
+                    window._dtMiniMap.remove();
+                    window._dtMiniMap = null;
+                }
+            }, 400);
         }
 
         async function openDetailModal(exp) {
@@ -1218,10 +1370,41 @@
             detailModal.classList.add('flex');
             
             // Animation trigger
-            setTimeout(() => {
-                detailCard.classList.remove('scale-95', 'opacity-0');
-                detailCard.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            detailModal.classList.add('modal-backdrop-in');
+            detailCard.classList.remove('scale-95', 'opacity-0', 'modal-warp-out');
+            detailCard.classList.add('modal-warp-in');
+
+            // Re-trigger title reveal animation
+            const dtTitleEl = document.getElementById('dt-title');
+            dtTitleEl.classList.remove('modal-title-reveal');
+            void dtTitleEl.offsetWidth;
+            dtTitleEl.classList.add('modal-title-reveal');
+            
+            // MINI-MAP: Show the experience location in an embedded map
+            const minimapWrapper = document.getElementById('dt-minimap-wrapper');
+            const expForMap = exp;
+            if (expForMap.lat && expForMap.lng) {
+                minimapWrapper.classList.remove('hidden');
+                if (window._dtMiniMap) {
+                    window._dtMiniMap.remove();
+                    window._dtMiniMap = null;
+                }
+                setTimeout(() => {
+                    const mmContainer = document.getElementById('dt-minimap');
+                    if (!mmContainer) return;
+                    window._dtMiniMap = L.map(mmContainer, { zoomControl: false, attributionControl: false, dragging: true, scrollWheelZoom: false }).setView([expForMap.lat, expForMap.lng], 15);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(window._dtMiniMap);
+                    const pinIc = L.divIcon({
+                        className: '',
+                        html: `<div style="width:14px;height:14px;background:linear-gradient(135deg,#8b5cf6,#ec4899);border-radius:50%;border:2px solid white;box-shadow:0 0 15px rgba(139,92,246,0.8)"></div>`,
+                        iconSize: [14, 14], iconAnchor: [7, 7]
+                    });
+                    L.marker([expForMap.lat, expForMap.lng], { icon: pinIc }).addTo(window._dtMiniMap);
+                    setTimeout(() => window._dtMiniMap.invalidateSize(), 100);
+                }, 300);
+            } else {
+                minimapWrapper.classList.add('hidden');
+            }
             
             loadReviews(exp.id);
         }
@@ -1457,6 +1640,188 @@
             if(months < 12) return `${months}mo ago`;
             return `${Math.floor(months/12)}y ago`;
         }
+
+        // ================================================================
+        // PHASE 3: GPS LOCATION + LEAFLET MAP
+        // ================================================================
+
+        // GPS button in check-in modal
+        document.getElementById('ci-get-location')?.addEventListener('click', () => {
+            const locText = document.getElementById('ci-location-text');
+            locText.textContent = 'Detecting...';
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    window._ciLat = pos.coords.latitude;
+                    window._ciLng = pos.coords.longitude;
+                    locText.textContent = `📍 ${window._ciLat.toFixed(4)}, ${window._ciLng.toFixed(4)} — Attached!`;
+                    document.getElementById('ci-get-location').classList.add('border-blue-500/50', 'text-blue-400');
+                    document.getElementById('ci-get-location').classList.remove('border-white/10', 'text-gray-500');
+                },
+                () => { locText.textContent = 'GPS unavailable'; }
+            );
+        });
+
+        // Navigate button in detail modal
+        document.getElementById('dt-navigate-btn')?.addEventListener('click', () => {
+            const exp = allExperiences.find(e => e.id === currentExpId);
+            if (exp && exp.lat && exp.lng) {
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${exp.lat},${exp.lng}`, '_blank');
+            }
+        });
+
+        // Grid / Map view toggle
+        let leafletMap = null;
+        const gridSection = document.getElementById('grid-section');
+        const mapSection = document.getElementById('map-section');
+        const btnGridView = document.getElementById('btn-grid-view');
+        const btnMapView = document.getElementById('btn-map-view');
+
+        btnGridView?.addEventListener('click', () => {
+            gridSection.classList.remove('hidden');
+            mapSection.classList.add('hidden');
+            btnGridView.classList.add('bg-white', 'text-black');
+            btnGridView.classList.remove('text-gray-400');
+            btnMapView.classList.remove('bg-white', 'text-black');
+            btnMapView.classList.add('text-gray-400');
+        });
+
+        btnMapView?.addEventListener('click', () => {
+            gridSection.classList.add('hidden');
+            mapSection.classList.remove('hidden');
+            btnMapView.classList.add('bg-white', 'text-black');
+            btnMapView.classList.remove('text-gray-400');
+            btnGridView.classList.remove('bg-white', 'text-black');
+            btnGridView.classList.add('text-gray-400');
+            initMap();
+        });
+
+        function initMap() {
+            if (!leafletMap) {
+                leafletMap = L.map('map-container', { zoomControl: false }).setView([10.8231, 106.6297], 13);
+                // CartoDB dark tiles (free, no API key)
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OSM &copy; CARTO',
+                    maxZoom: 19,
+                }).addTo(leafletMap);
+                L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
+            }
+
+            // Clear previous markers
+            leafletMap.eachLayer(layer => { if (layer instanceof L.Marker) leafletMap.removeLayer(layer); });
+
+            // Plot user location
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const uLat = pos.coords.latitude;
+                const uLng = pos.coords.longitude;
+
+                const userIcon = L.divIcon({
+                    className: '',
+                    html: `<div style="width:20px;height:20px;background:linear-gradient(135deg,#3b82f6,#06b6d4);border-radius:50%;border:3px solid white;box-shadow:0 0 20px rgba(59,130,246,0.8)"></div>`,
+                    iconSize: [20, 20], iconAnchor: [10, 10]
+                });
+                L.marker([uLat, uLng], { icon: userIcon }).addTo(leafletMap)
+                    .bindPopup(`<div style="font-family:Inter,sans-serif;padding:4px;color:white"><b style="color:#60a5fa">📍 You Are Here</b></div>`);
+
+                leafletMap.setView([uLat, uLng], 14);
+
+                // Plot experience markers
+                allExperiences.forEach((exp, i) => {
+                    const eLat = exp.lat || (uLat + (Math.random() - 0.5) * 0.02);
+                    const eLng = exp.lng || (uLng + (Math.random() - 0.5) * 0.02);
+
+                    const pinIcon = L.divIcon({
+                        className: '',
+                        html: `<div style="width:18px;height:18px;background:linear-gradient(135deg,#8b5cf6,#ec4899);border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid rgba(255,255,255,0.5);box-shadow:0 0 12px rgba(139,92,246,0.6);cursor:pointer"></div>`,
+                        iconSize: [18, 18], iconAnchor: [9, 18]
+                    });
+
+                    const imgTag = exp.imageUrl && !isVideoUrl(exp.imageUrl)
+                        ? `<img src="${exp.imageUrl}" style="width:100%;height:70px;object-fit:cover;border-radius:8px;margin-bottom:6px">`
+                        : '';
+
+                    const marker = L.marker([eLat, eLng], { icon: pinIcon }).addTo(leafletMap);
+                    marker.bindPopup(`<div style="font-family:Inter,sans-serif;min-width:180px;color:white">
+                            ${imgTag}
+                            <div style="font-size:9px;font-weight:800;color:#a78bfa;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px">${exp.category}</div>
+                            <div style="font-size:13px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:6px">${exp.title}</div>
+                            <div style="font-size:10px;color:#9ca3af;margin-bottom:8px">${exp.tags || ''}</div>
+                            <button onclick="window._openExpFromMap(${i})" style="background:linear-gradient(90deg,#8b5cf6,#3b82f6);color:white;border:none;padding:6px 12px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;width:100%;text-transform:uppercase;letter-spacing:0.1em">View Experience →</button>
+                        </div>`, { maxWidth: 220 });
+                    
+                    // Store marker reference for fly-to
+                    exp._marker = marker;
+                    exp._mapLat = eLat;
+                    exp._mapLng = eLng;
+                });
+
+                // Global function to open detail from map popup
+                window._openExpFromMap = function(index) {
+                    openDetailModal(allExperiences[index]);
+                };
+                });
+            }, () => {
+                // Fallback: no GPS, center on Ho Chi Minh City
+                leafletMap.setView([10.8231, 106.6297], 12);
+            });
+
+            setTimeout(() => leafletMap.invalidateSize(), 200);
+        }
+
+        // Show Navigate button in detail modal when experience has GPS
+        const origOpenDetail = openDetailModal;
+        const _origOpenDetail = openDetailModal;
+        // Patch openDetailModal to also show Navigate button
+        const __origOpenDetail = openDetailModal;
+
+        // We handle the navigate button visibility inside openDetailModal
+        // by hooking into the existing function flow:
+        const _detailNavBtn = document.getElementById('dt-navigate-btn');
+        const _origModalShow = detailModal;
+        // The MutationObserver approach: when detail modal becomes visible, check for GPS data
+        new MutationObserver(() => {
+            if (!detailModal.classList.contains('hidden') && currentExpId) {
+                const exp = allExperiences.find(e => e.id === currentExpId);
+                if (exp && exp.lat && exp.lng) {
+                    _detailNavBtn.classList.remove('hidden');
+                } else {
+                    _detailNavBtn.classList.add('hidden');
+                }
+            }
+        }).observe(detailModal, { attributes: true, attributeFilter: ['class'] });
+
+        // "Show on Map" button inside detail modal — closes modal and flies map to location
+        document.getElementById('dt-show-on-map')?.addEventListener('click', () => {
+            const exp = allExperiences.find(e => e.id === currentExpId);
+            if (!exp) return;
+            const lat = exp._mapLat || exp.lat;
+            const lng = exp._mapLng || exp.lng;
+            if (!lat || !lng) return;
+
+            // Close detail modal
+            closeDetail();
+
+            // Switch to map view
+            setTimeout(() => {
+                gridSection.classList.add('hidden');
+                mapSection.classList.remove('hidden');
+                btnMapView.classList.add('bg-white', 'text-black');
+                btnMapView.classList.remove('text-gray-400');
+                btnGridView.classList.remove('bg-white', 'text-black');
+                btnGridView.classList.add('text-gray-400');
+                initMap();
+
+                // Fly to the pin with smooth animation
+                setTimeout(() => {
+                    if (leafletMap) {
+                        leafletMap.flyTo([lat, lng], 16, { duration: 1.5 });
+                        // Open the popup if marker exists
+                        if (exp._marker) {
+                            setTimeout(() => exp._marker.openPopup(), 1600);
+                        }
+                    }
+                }, 500);
+            }, 450);
+        });
 
     </script>
     <script type="module" src="audio.js"></script>

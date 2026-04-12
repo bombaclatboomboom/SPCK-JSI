@@ -11,6 +11,11 @@
     <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/+esm"></script>
 </head>
 <body class="bg-black text-white h-screen flex flex-col overflow-hidden">
+    <audio id="bg-music" data-turbo-permanent="true" loop pre-load="auto">
+    <source src="assets/hk.mp3" type="audio/mpeg">
+    <source src="assets/ana.mp3" type="audio/mpeg">
+    <source src="assets/tnye.mp3" type="audio/mpeg">
+</audio>
 
     <div class="aurora-bg opacity-30"></div>
 
@@ -92,7 +97,7 @@
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
         import { translatePage, setLanguage, getCurrentLang } from './i18n.js';
 
@@ -139,12 +144,11 @@
             }
         });
 
-        // 2. LIVE GEMINI AI LOGIC
+        // 2. LIVE GEMINI AI LOGIC (PHASE 4: Context-Aware Trip Planner)
         const chatBox = document.getElementById('chat-box');
         const chatInput = document.getElementById('chat-input');
         const btnSend = document.getElementById('btn-send');
 
-        // Direct API Key Connection
         const geminiKey = "AIzaSyBnF7DWWaxwxpXw13Y6lQURgTm1o5XvgVA";
         const genAI = new GoogleGenerativeAI(geminiKey);
         const generativeModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -153,16 +157,53 @@
         document.querySelectorAll('.suggestion-chip').forEach(chip => {
             chip.addEventListener('click', (e) => {
                 const text = e.target.innerText;
-                chatInput.value = text.replace(/🍜 |🎧 |🪩 /, ''); // strip emoji
+                chatInput.value = text.replace(/🍜 |🎧 |🪩 /, '');
                 chatInput.focus();
             });
         });
 
-        const systemPrompt = `You are the "Oracle AI", an AI bestie and city guide for a highly aesthetic, neon-lit cyberpunk world. Act like a friendly Gen-Z local guide. Use lowercase, aesthetic emojis (✨, 🤍, 💅, 🎧), and slang like 'vibes', 'lowkey', 'rn'. The user will ask for recommendations for food, chilling, parting, or vent about their mood. Act empathetic and enthusiastically recommend imaginative, cool fictional locations in the city (like an underground synth-wave club, a rooftop matcha garden, or a 24/7 holographic noodle bar). Keep responses concise (3-4 sentences max).`;
+        // Fetch ALL experiences from Firebase to inject as AI context
+        let experiencesContext = '';
+        async function loadAIContext() {
+            try {
+                const q = query(collection(db, "experiences"), orderBy("createdAt", "desc"));
+                const snap = await getDocs(q);
+                const exps = snap.docs.map(d => d.data());
+                if (exps.length > 0) {
+                    experiencesContext = '\n\nHere is the REAL DATABASE of experiences on our platform that you MUST reference when making recommendations:\n';
+                    exps.forEach((e, i) => {
+                        experiencesContext += `${i+1}. "${e.title}" — Category: ${e.category || 'General'} | Tags: ${e.tags || 'none'} | Price: ${e.price || 'Free'}${e.lat ? ' | GPS: '+e.lat+','+e.lng : ''}\n`;
+                    });
+                    experiencesContext += '\nAlways prioritize recommending places from this REAL database above fictional ones. When the user asks for a trip plan or itinerary, organize the database entries into a structured day-by-day plan with emojis and time slots.';
+                }
+            } catch(e) { console.error('AI context load failed:', e); }
+        }
+        loadAIContext();
+
+        // Build system prompt with injected context
+        function buildSystemPrompt() {
+            return `You are the "Oracle AI", a premium AI travel bestie and city guide for the Vibe social platform. You have access to REAL location data from our ecosystem.
+
+Personality: Act like a friendly Gen-Z local guide. Use lowercase, aesthetic emojis (✨, 🤍, 💅, 🎧, 📍, 🗓️), and slang like 'vibes', 'lowkey', 'rn'. Be enthusiastic but concise.
+
+Capabilities:
+1. RECOMMEND places from our real database when they match the user's request
+2. PLAN full trip itineraries when asked (day-by-day with time slots)
+3. Give mood-based suggestions (tired? chill? party mode?)
+4. Mix real database entries with creative suggestions for variety
+
+Formatting rules:
+- Use **bold** for place names
+- Use bullet points for lists
+- For itineraries, use headers like "Day 1 — Chill Explorer Mode"
+- Keep individual responses to 4-6 sentences max unless it's a full itinerary
+- When recommending a database entry, mention it by exact title
+${experiencesContext}`;
+        }
 
         let chatHistory = [
-            { role: "user", parts: [{ text: systemPrompt }] },
-            { role: "model", parts: [{ text: "Understood. I am activated as the Oracle AI bestie." }] }
+            { role: "user", parts: [{ text: buildSystemPrompt() }] },
+            { role: "model", parts: [{ text: "Understood. I am activated as the Oracle AI bestie with full access to the Vibe ecosystem database. ready to curate your perfect experience ✨" }] }
         ];
 
         function addMessage(text, isUser) {
@@ -214,10 +255,17 @@
                 chatHistory.push({ role: "user", parts: [{ text }] });
                 chatHistory.push({ role: "model", parts: [{ text: responseText }] });
                 
-                // Replace loading html with actual text
+                // Parse markdown-like formatting from AI response
+                let formatted = responseText
+                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-purple-300">$1</strong>')
+                    .replace(/^- (.+)$/gm, '<div class="flex items-start gap-2 mt-1"><span class="text-purple-400 mt-0.5">•</span><span>$1</span></div>')
+                    .replace(/^(Day \d+.*?)$/gm, '<div class="text-sm font-bold text-blue-400 mt-3 mb-1 uppercase tracking-wider">📅 $1</div>')
+                    .replace(/(\d{1,2}:\d{2}\s*(AM|PM|am|pm))/g, '<span class="text-cyan-400 font-mono text-xs">$1</span>')
+                    .replace(/\n/g, '<br>');
+                
                 const textContainer = responseDiv.querySelector('.response-bubble');
                 if(textContainer) {
-                    textContainer.innerHTML = responseText;
+                    textContainer.innerHTML = formatted;
                 }
                 lucide.createIcons();
                 chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
